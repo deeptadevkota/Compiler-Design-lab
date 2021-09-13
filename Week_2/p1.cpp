@@ -6,14 +6,8 @@
 
 using namespace std;
 
-// considering one letter non-terminal and terminals
+// Considering one letter non-terminal and terminals
 
-// bool is_terminal(char c)
-// {
-//     if (c == '+' || c == '-' || c == '*' || c == '/' || c == '(' || c == ')' || c == '[' || c == ']' || c == '{' || c == '}' || c == '#')
-//         return true;
-//     return false;
-// }
 
 void calculateFirst(char c, unordered_map<char, vector<string>> &m, vector<string> &first, vector<char> &vis, vector<bool> &epsilon)
 {
@@ -109,11 +103,26 @@ int main()
             calculateFirst(grammar[i][0], m, first, vis, epsilon);
         }
     }
-    cout << "Non-terminal" << '\t' << "First()" << '\t' << '\t' << "is_epsilon" << endl;
+
+    //removing duplicates from first()
+
+    cout << "Non-terminal" << '\t' << "First()" << endl;
 
     for (int i = 0; i < n; i++)
     {
-        cout << grammar[i][0] << '\t' << '\t' << first[grammar[i][0]] << "\t" << '\t' << epsilon[grammar[i][0]] << endl;
+        cout << grammar[i][0] << '\t' << '\t';
+        unordered_set<char> s;
+        for (char c : first[grammar[i][0]])
+        {
+            if (s.find(c) == s.end())
+            {
+                cout << c << " ";
+                s.insert(c);
+            }
+        }
+        if (epsilon[grammar[i][0]])
+            cout << "#";
+        cout << endl;
     }
 
     return 0;
