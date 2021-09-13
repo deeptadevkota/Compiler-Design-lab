@@ -8,10 +8,8 @@ using namespace std;
 
 // Considering one letter non-terminal and terminals
 
-
-void calculateFirst(char c, unordered_map<char, vector<string>> &m, vector<string> &first, vector<char> &vis, vector<bool> &epsilon)
+void calculateFirst(char c, unordered_map<char, vector<string>> &m, vector<string> &first, vector<bool> &vis, vector<bool> &epsilon)
 {
-
     string first_c = "";
     for (string i : m[c])
     {
@@ -52,6 +50,46 @@ void calculateFirst(char c, unordered_map<char, vector<string>> &m, vector<strin
     return;
 }
 
+void calculateFollow(char c, unordered_map<char, vector<string>> &m, vector<string> &first, vector<bool> &vis_f, vector<bool> &epsilon, vector<string> &follow)
+{
+    for (auto j : m)
+    {
+        for (string str : j.second)
+        {
+            for (int l = 0; l < str.size(); l++)
+            {
+                if (str[l] == c)
+                {
+                    //if l is the last character
+                    if (l == (str.size() - 1))
+                    {
+                        if (vis_f[j.first] == 0)
+                            calculateFollow(j.first, m, first, vis_f, epsilon, follow);
+                        follow[c] += follow[j.first];
+                    }
+                    else
+                    {
+                        follow[c] += first[str[l + 1]];
+                        while ((l + 2) < str.size() && epsilon[str[l + 1]])
+                        {
+                            l++;
+                            follow[c] += first[str[l + 1]];
+                        }
+                        if (l == (str.size() - 2) && epsilon[str[l + 1]])
+                        {
+                            if (vis_f[j.first] == 0)
+                                calculateFollow(j.first, m, first, vis_f, epsilon, follow);
+                            follow[c] += follow[j.first];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    vis_f[c] = 1;
+    return;
+}
+
 int main()
 {
     int n;
@@ -62,7 +100,9 @@ int main()
         cin >> grammar[i];
     }
     vector<string> first(256, "");
-    vector<char> vis(256, 0);
+    vector<string> follow(256, "");
+    vector<bool> vis(256, 0);
+    vector<bool> vis_f(256, 0);
     vector<bool> epsilon(256, false);
 
     // enter the terminals
@@ -74,6 +114,7 @@ int main()
         char t;
         cin >> t;
         first[t] = t;
+        follow[t] = t;
         vis[t] = 1;
     }
 
@@ -95,6 +136,8 @@ int main()
         if (p != "")
             m[grammar[i][0]].push_back(p);
     }
+
+    //Computing the First() of the given non-terminals
 
     for (int i = 0; i < n; i++)
     {
@@ -123,6 +166,28 @@ int main()
         if (epsilon[grammar[i][0]])
             cout << "#";
         cout << endl;
+    }
+
+    cout << endl
+         << endl;
+
+    //Computing the Follow() of the given non-terminals
+
+    //considering grammar[0][0] as the starting symbol
+
+    follow[grammar[0][0]] = "$";
+
+    for (int i = 0; i < n; i++)
+    {
+        if (vis_f[grammar[i][0]] == 0)
+            calculateFollow(grammar[i][0], m, first, vis_f, epsilon, follow);
+    }
+
+    cout << "Non-terminal" << '\t' << "Follow()" << endl;
+
+    for (int i = 0; i < n; i++)
+    {
+        cout << grammar[i][0] << '\t' << '\t' << follow[grammar[i][0]] << endl;
     }
 
     return 0;
