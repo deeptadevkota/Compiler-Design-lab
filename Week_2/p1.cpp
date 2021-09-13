@@ -93,6 +93,7 @@ void calculateFollow(char c, unordered_map<char, vector<string>> &m, vector<stri
 int main()
 {
     int n;
+    cout << "Enter the number of production: ";
     cin >> n;
     vector<string> grammar(n);
     for (int i = 0; i < n; i++)
@@ -108,7 +109,9 @@ int main()
     // enter the terminals
     //base case where terminal gives terminal itself
     int ts;
+    cout << "Enter the number of terminals: ";
     cin >> ts;
+    cout << "Enter the terminals" << endl;
     for (int i = 0; i < ts; i++)
     {
         char t;
@@ -203,3 +206,30 @@ int main()
 
     return 0;
 }
+
+/*
+
+SAMPLE INPUT
+
+3
+S=Bb|Cd
+B=aB|#
+C=cC|#
+4
+a
+b
+c
+d
+
+SAMPLE OUTPUT
+
+Non-terminal    First()
+S               a b c d 
+B               a #
+C               c #
+
+Non-terminal    Follow()
+S               $ 
+B               b 
+C               d 
+*/
