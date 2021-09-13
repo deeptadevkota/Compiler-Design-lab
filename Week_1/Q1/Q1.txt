@@ -1,0 +1,4 @@
+For the given program:
+Identifiers: a, t1, t2, t3
+Keywords: int, if, then, print, else, endif
+Operators: '=', '-', '*', '/', '>', '+'

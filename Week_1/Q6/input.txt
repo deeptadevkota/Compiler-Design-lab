@@ -1,0 +1,3 @@
+a      b   c  d e
+The words are         spaced in this text!
+Try  to        replace the multiples       spaces     with a         single    space  .
