@@ -7,8 +7,6 @@
 using namespace std;
 
 // considering one letter non-terminal and terminals
-// considering small letter words as terminals
-// *, /, +, -, (, ), [,],{,}, # are considered as terminals
 
 // bool is_terminal(char c)
 // {
