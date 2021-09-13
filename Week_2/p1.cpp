@@ -63,7 +63,7 @@ void calculateFollow(char c, unordered_map<char, vector<string>> &m, vector<stri
                     //if l is the last character
                     if (l == (str.size() - 1))
                     {
-                        if (vis_f[j.first] == 0)
+                        if (vis_f[j.first] == 0 && c != j.first)
                             calculateFollow(j.first, m, first, vis_f, epsilon, follow);
                         follow[c] += follow[j.first];
                     }
@@ -77,7 +77,7 @@ void calculateFollow(char c, unordered_map<char, vector<string>> &m, vector<stri
                         }
                         if (l == (str.size() - 2) && epsilon[str[l + 1]])
                         {
-                            if (vis_f[j.first] == 0)
+                            if (vis_f[j.first] == 0 && c != j.first)
                                 calculateFollow(j.first, m, first, vis_f, epsilon, follow);
                             follow[c] += follow[j.first];
                         }
@@ -149,7 +149,22 @@ int main()
 
     //removing duplicates from first()
 
-    cout << "Non-terminal" << '\t' << "First()" << endl;
+    cout << endl
+         << endl;
+
+    //Computing the Follow() of the given non-terminals
+
+    //considering grammar[0][0] as the starting symbol
+
+    follow[grammar[0][0]] = "$";
+
+    for (int i = 0; i < n; i++)
+    {
+        if (vis_f[grammar[i][0]] == 0)
+            calculateFollow(grammar[i][0], m, first, vis_f, epsilon, follow);
+    }
+
+    cout << "Non-terminal" << '\t' << "First" << endl;
 
     for (int i = 0; i < n; i++)
     {
@@ -167,27 +182,23 @@ int main()
             cout << "#";
         cout << endl;
     }
+    cout << endl;
 
-    cout << endl
-         << endl;
-
-    //Computing the Follow() of the given non-terminals
-
-    //considering grammar[0][0] as the starting symbol
-
-    follow[grammar[0][0]] = "$";
+    cout << "Non-terminal" << '\t' << "Follow" << endl;
 
     for (int i = 0; i < n; i++)
     {
-        if (vis_f[grammar[i][0]] == 0)
-            calculateFollow(grammar[i][0], m, first, vis_f, epsilon, follow);
-    }
-
-    cout << "Non-terminal" << '\t' << "Follow()" << endl;
-
-    for (int i = 0; i < n; i++)
-    {
-        cout << grammar[i][0] << '\t' << '\t' << follow[grammar[i][0]] << endl;
+        cout << grammar[i][0] << '\t' << '\t';
+        unordered_set<char> s;
+        for (char c : follow[grammar[i][0]])
+        {
+            if (s.find(c) == s.end())
+            {
+                cout << c << " ";
+                s.insert(c);
+            }
+        }
+        cout << endl;
     }
 
     return 0;
