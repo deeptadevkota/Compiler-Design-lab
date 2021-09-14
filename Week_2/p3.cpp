@@ -7,19 +7,14 @@
 
 using namespace std;
 
-void ERROR()
-{
-}
-
 int main()
 {
     //  Let given grammar is G = (V, T, S, P)
 
-    int n_ter, ter, ss, pro;
-    cin >> n_ter >> ter >> pro;
+    int n_ter, ter, ss;
+    cin >> n_ter >> ter;
 
     unordered_set<char> v(n_ter), t(ter);
-    vector<string> p(pro);
 
     //non terminals
     for (int i = 0; i < n_ter; i++)
@@ -37,15 +32,9 @@ int main()
         t.insert(c);
     }
 
-    //starting symbols
+    //starting symbol
     char start_symbol;
     cin >> start_symbol;
-
-    //productions
-    for (int i = 0; i < pro; i++)
-    {
-        cin >> p[i];
-    }
 
     //accepting the parsing table
     unordered_map<char, unordered_map<char, string>> PT;
@@ -55,14 +44,17 @@ int main()
         char non_ter = *i;
         for (auto j = t.begin(); j != t.end(); j++)
         {
+            char ter = *j;
+            cout << non_ter << " " << ter << " : ";
             string production;
             cin >> production;
-            PT[non_ter][*j] = production;
+            PT[non_ter][ter] = production;
         }
     }
     //string for testing the parsing algorithm
     string test;
     cin >> test;
+    test.push_back('$');
 
     //stack for the parsing algorithm
     stack<char> st;
@@ -71,9 +63,12 @@ int main()
 
     int ptr = 0;
     bool flag = 0;
-    while (!st.empty())
+    int cnt = 0;
+    while (!st.empty() && cnt < 10)
     {
+        cnt++;
         char A = st.top();
+
         if (t.find(A) != t.end() || A == '$')
         {
             if (A == test[ptr])
@@ -84,7 +79,6 @@ int main()
             else
             {
                 flag = 1;
-                ERROR();
                 break;
             }
         }
@@ -92,7 +86,10 @@ int main()
         {
             if (PT[A][test[ptr]] != "")
             {
+                st.pop();
                 string rule = PT[A][test[ptr]];
+                if (rule == "#")
+                    continue;
                 for (int i = rule.size() - 1; i >= 0; i--)
                 {
                     st.push(rule[i]);
@@ -101,14 +98,13 @@ int main()
             else
             {
                 flag = 1;
-                ERROR();
                 break;
             }
         }
     }
 
     if (flag == 1)
-        cout << "String is accepted by the parser" << endl;
-    else
         cout << "String is not accepted by the parser" << endl;
+    else
+        cout << "String is accepted by the parser" << endl;
 }
