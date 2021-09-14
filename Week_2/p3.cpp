@@ -63,10 +63,9 @@ int main()
 
     int ptr = 0;
     bool flag = 0;
-    int cnt = 0;
-    while (!st.empty() && cnt < 10)
+    while (!st.empty())
     {
-        cnt++;
+
         char A = st.top();
 
         if (t.find(A) != t.end() || A == '$')
@@ -108,7 +107,6 @@ int main()
     else
         cout << "String is accepted by the parser" << endl;
 }
-
 
 /*
 
