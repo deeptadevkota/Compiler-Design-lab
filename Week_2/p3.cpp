@@ -63,7 +63,7 @@ int main()
 
     int ptr = 0;
     bool flag = 0;
-    while (!st.empty())
+    while (!st.empty() && ptr < test.size())
     {
 
         char A = st.top();
@@ -102,7 +102,7 @@ int main()
         }
     }
 
-    if (flag == 1)
+    if (flag == 1 || !st.empty())
         cout << "String is not accepted by the parser" << endl;
     else
         cout << "String is accepted by the parser" << endl;
