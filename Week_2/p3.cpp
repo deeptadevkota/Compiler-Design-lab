@@ -108,3 +108,27 @@ int main()
     else
         cout << "String is accepted by the parser" << endl;
 }
+
+
+/*
+
+SAMPLE INPUT:
+
+1
+3
+S
+(
+)
+$
+S
+S $ : #
+S ) : #
+S ( : (S)
+((()))
+
+SAMPLE OUTPUT:
+
+String is accepted by the parser
+
+
+*/
