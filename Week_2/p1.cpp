@@ -96,6 +96,7 @@ int main()
     cout << "Enter the number of production: ";
     cin >> n;
     vector<string> grammar(n);
+    cout << "Enter the productions, in the form of S=Ab|Ba and use '#' for epsilon: " << endl;
     for (int i = 0; i < n; i++)
     {
         cin >> grammar[i];
@@ -209,7 +210,7 @@ int main()
 
 /*
 
-SAMPLE INPUT
+SAMPLE INPUT:
 
 3
 S=Bb|Cd
@@ -221,7 +222,7 @@ b
 c
 d
 
-SAMPLE OUTPUT
+SAMPLE OUTPUT:
 
 Non-terminal    First()
 S               a b c d 
@@ -232,4 +233,6 @@ Non-terminal    Follow()
 S               $ 
 B               b 
 C               d 
+
+
 */

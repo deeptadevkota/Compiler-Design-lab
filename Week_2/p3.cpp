@@ -11,6 +11,8 @@ int main()
 {
     //  Let given grammar is G = (V, T, S, P)
 
+    cout << "Enter the number of non-terminal and terminal respectively:" << endl;
+
     int n_ter, ter, ss;
     cin >> n_ter >> ter;
 
@@ -83,7 +85,7 @@ int main()
         }
         else if (v.find(A) != v.end())
         {
-            if (PT[A][test[ptr]] != "")
+            if (PT[A][test[ptr]] != " ")
             {
                 st.pop();
                 string rule = PT[A][test[ptr]];
