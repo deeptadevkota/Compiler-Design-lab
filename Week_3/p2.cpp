@@ -63,7 +63,6 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
 
             if (check(k, i))
             {
-                
 
                 //if yes then
                 int ind = find_index(k);
@@ -83,8 +82,10 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
             }
         }
     }
+    if (temp.empty())
+        return;
     int flag = 0;
-    for (int itr = 1; itr <= ptr; itr++)
+    for (int itr = 0; itr <= states; itr++)
     {
         if (st[itr] == temp)
         {
@@ -96,11 +97,14 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
     {
         states++;
         st[states] = temp;
-    }
-    for (auto i : temp)
-    {
-        for (auto j : i.second)
-            cout << i.first << " --> " << j << endl;
+        cout << "State: " << states << endl;
+        for (auto i : temp)
+        {
+            for (auto j : i.second)
+                cout << i.first << " --> " << j << endl;
+        }
+        cout << endl
+             << endl;
     }
 }
 
@@ -176,10 +180,10 @@ int main()
     compute_items('Z', m, is_computed, items, nter);
 
     cout << endl;
-    cout << "State 1:" << endl;
+    cout << "State 0:" << endl;
     for (auto i : items['Z'])
     {
-        st[1][i.first] = i.second;
+        st[0][i.first] = i.second;
         for (auto j : i.second)
         {
             cout << i.first << " --> " << j << endl;
@@ -190,7 +194,7 @@ int main()
     cout << endl
          << endl;
 
-    int ptr = 1, states = 1;
+    int ptr = 0, states = 0;
     // compute_states(ptr, states, 'b', st, items);
     // return 0;
 
@@ -206,9 +210,6 @@ int main()
         }
         ptr++;
     }
-
-    cout << states << endl;
-
     return 0;
 }
 
@@ -240,9 +241,8 @@ SAMPLE INPUT:2
 2
 a
 b
-3
+2
 A
-B
 S
 2
 S=AA
