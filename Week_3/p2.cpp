@@ -5,6 +5,7 @@ using namespace std;
 void compute_items(char c, unordered_map<char, set<string>> &m, vector<bool> &is_computed, unordered_map<char, unordered_map<char, set<string>>> &items, unordered_set<char> &nter)
 {
 
+    cout << c << endl;
     items[c][c] = m[c];
 
     for (auto j : m[c])
@@ -12,6 +13,7 @@ void compute_items(char c, unordered_map<char, set<string>> &m, vector<bool> &is
 
         if (nter.find(j[1]) != nter.end())
         {
+
             if (is_computed[c] == false)
                 compute_items(j[1], m, is_computed, items, nter);
 
@@ -20,10 +22,86 @@ void compute_items(char c, unordered_map<char, set<string>> &m, vector<bool> &is
                 items[c][k.first] = k.second;
             }
         }
-        
     }
 
     is_computed[c] = true;
+}
+
+bool check(string s, char c)
+{
+    int n = s.size();
+    for (int i = 0; i < n; i++)
+    {
+        if (s[i] == '.' && (i + 1) < n && s[i + 1] == c)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+int find_index(string str)
+{
+    for (int i = 0; i < str.size(); i++)
+    {
+        if (str[i] == '.')
+            return i;
+    }
+    return 1;
+}
+
+void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_map<char, set<string>>> &st, unordered_map<char, unordered_map<char, set<string>>> &items)
+{
+    unordered_map<char, set<string>> temp;
+    for (auto j : st[ptr])
+    {
+
+        for (auto k : j.second)
+        {
+            // checking if there can occur a transition on i from on
+            // a grammar of the from j.first --> k
+
+            if (check(k, i))
+            {
+                
+
+                //if yes then
+                int ind = find_index(k);
+                swap(k[ind], k[ind + 1]);
+                temp[j.first].insert(k);
+
+                //now iterate through the items
+
+                if ((ind + 2) < k.size())
+                {
+                    for (auto l : items[k[ind + 2]])
+                    {
+                        for (auto loop : l.second)
+                            temp[l.first].insert(loop);
+                    }
+                }
+            }
+        }
+    }
+    int flag = 0;
+    for (int itr = 1; itr <= ptr; itr++)
+    {
+        if (st[itr] == temp)
+        {
+            flag = 1;
+            break;
+        }
+    }
+    if (flag == 0)
+    {
+        states++;
+        st[states] = temp;
+    }
+    for (auto i : temp)
+    {
+        for (auto j : i.second)
+            cout << i.first << " --> " << j << endl;
+    }
 }
 
 int main()
@@ -61,8 +139,7 @@ int main()
     char start_symbol;
     cin >> start_symbol;
 
-
-    string str="Z=";
+    string str = "Z=";
     str.push_back(start_symbol);
     // cout << "str: " << str << endl;
     grammar[0] = str;
@@ -73,8 +150,6 @@ int main()
     // for(int i=0;i<=n_pro;i++)
     //     cout << grammar[i] << endl;
 
-
-    
     unordered_map<char, set<string>> m;
 
     for (int i = 0; i <= n_pro; i++)
@@ -92,18 +167,11 @@ int main()
         }
         if (p != ".")
             m[grammar[i][0]].insert(p);
-        
     }
-    
 
-
-    // for(auto i:m['Z'])
-    // {
-    //     cout << i << endl;
-    // }
-
-    vector<bool> is_computed(256,0);
+    vector<bool> is_computed(256, 0);
     unordered_map<char, unordered_map<char, set<string>>> items;
+    unordered_map<int, unordered_map<char, set<string>>> st;
 
     compute_items('Z', m, is_computed, items, nter);
 
@@ -111,12 +179,35 @@ int main()
     cout << "State 1:" << endl;
     for (auto i : items['Z'])
     {
+        st[1][i.first] = i.second;
         for (auto j : i.second)
+        {
             cout << i.first << " --> " << j << endl;
+        }
     }
 
-    unordered_map<int, unordered_map<char, set<string>>> st;
+    //UPTIL HERE IT IS CORRECT
+    cout << endl
+         << endl;
 
+    int ptr = 1, states = 1;
+    // compute_states(ptr, states, 'b', st, items);
+    // return 0;
+
+    while (ptr <= states)
+    {
+        for (auto i : nter)
+        {
+            compute_states(ptr, states, i, st, items);
+        }
+        for (auto i : ter)
+        {
+            compute_states(ptr, states, i, st, items);
+        }
+        ptr++;
+    }
+
+    cout << states << endl;
 
     return 0;
 }
@@ -141,6 +232,21 @@ A=a
 B=b
 C=c
 D=d
+S
+
+
+SAMPLE INPUT:2
+
+2
+a
+b
+3
+A
+B
+S
+2
+S=AA
+A=aA|b
 S
 
 */
