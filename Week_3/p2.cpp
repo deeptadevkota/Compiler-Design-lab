@@ -249,4 +249,16 @@ S=AA
 A=aA|b
 S
 
+2
++
+i
+2
+E
+T
+3
+E=T+E
+E=T
+T=i
+E
+
 */
