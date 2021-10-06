@@ -192,13 +192,12 @@ int main()
         }
     }
 
-    //UPTIL HERE IT IS CORRECT
+   
     cout << endl
          << endl;
 
     int ptr = 0, states = 0;
-    // compute_states(ptr, states, 'b', st, items);
-    // return 0;
+  
 
     while (ptr <= states)
     {

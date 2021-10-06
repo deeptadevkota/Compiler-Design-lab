@@ -62,11 +62,6 @@ int main()
         }
     }
 
-    // for (int i = 0; i < cnt; i++)
-    // {
-    //     cout << i << " : " << m[i].first << " --> " << m[i].second << endl;
-    // }
-    // return 0;
     int n_states;
     cin >> n_states;
 
@@ -74,16 +69,16 @@ int main()
     {
         for (auto j : ter)
         {
-            // cout << i << " " << j << " --> ";
+            cout << i << " " << j << " --> ";
             cin >> PT[i + '0'][j];
         }
-        // cout << i << " "
-        //      << "$"
-        //      << " --> ";
+        cout << i << " "
+             << "$"
+             << " --> ";
         cin >> PT[i + '0']['$'];
         for (auto j : nter)
         {
-            // cout << i << " " << j << " --> ";
+            cout << i << " " << j << " --> ";
             cin >> PT[i + '0'][j];
         }
     }
@@ -91,6 +86,10 @@ int main()
     string str;
     cin >> str;
     str.push_back('$');
+
+    cout << endl
+         << "The reduction and shift operations are: " << endl
+         << endl;
 
     stack<char> st;
     st.push('0');
