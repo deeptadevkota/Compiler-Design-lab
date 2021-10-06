@@ -5,7 +5,6 @@ using namespace std;
 void compute_items(char c, unordered_map<char, set<string>> &m, vector<bool> &is_computed, unordered_map<char, unordered_map<char, set<string>>> &items, unordered_set<char> &nter)
 {
 
-    cout << c << endl;
     items[c][c] = m[c];
 
     for (auto j : m[c])
@@ -145,14 +144,17 @@ int main()
 
     string str = "Z=";
     str.push_back(start_symbol);
-    // cout << "str: " << str << endl;
+
     grammar[0] = str;
-    // return 0;
 
-    // cout << "The augmented grammar is:" << endl;
+    cout << endl << endl;
+    cout << "The augmented grammar is:" << endl;
 
-    // for(int i=0;i<=n_pro;i++)
-    //     cout << grammar[i] << endl;
+    for(int i=0;i<=n_pro;i++)
+        cout << grammar[i] << endl;
+
+    cout << endl << endl;
+    cout << "The states for the given grammar are: " << endl << endl;
 
     unordered_map<char, set<string>> m;
 
