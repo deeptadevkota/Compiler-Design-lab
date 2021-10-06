@@ -104,9 +104,14 @@ int main()
             st.pop();
             string res = PT[st.top()][top2];
             cout << st.top() << " " << top2 << " --> " << res << endl;
-            if (res == "accepted")
+            if (res == "accept")
             {
                 found = true;
+                break;
+            }
+            else if (res == "^")
+            {
+                found = false;
                 break;
             }
             st.push(top2);
@@ -114,9 +119,14 @@ int main()
         }
         string res = PT[st.top()][str[ptr]];
         cout << st.top() << " " << str[ptr] << " --> " << res << endl;
-        if (res == "accepted")
+        if (res == "accept")
         {
             found = true;
+            break;
+        }
+        else if (res == "^")
+        {
+            found = false;
             break;
         }
 
@@ -128,6 +138,11 @@ int main()
             len *= 2;
             while (len--)
             {
+                if (st.empty())
+                {
+                    found = false;
+                    break;
+                }
                 st.pop();
             }
             st.push(m[nth_g].first);
