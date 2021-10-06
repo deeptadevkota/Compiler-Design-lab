@@ -74,16 +74,16 @@ int main()
     {
         for (auto j : ter)
         {
-            cout << i << " " << j << " --> ";
+            // cout << i << " " << j << " --> ";
             cin >> PT[i + '0'][j];
         }
-        cout << i << " "
-             << "$"
-             << " --> ";
+        // cout << i << " "
+        //      << "$"
+        //      << " --> ";
         cin >> PT[i + '0']['$'];
         for (auto j : nter)
         {
-            cout << i << " " << j << " --> ";
+            // cout << i << " " << j << " --> ";
             cin >> PT[i + '0'][j];
         }
     }
@@ -103,6 +103,7 @@ int main()
             char top2 = st.top();
             st.pop();
             string res = PT[st.top()][top2];
+            cout << st.top() << " " << top2 << " --> " << res << endl;
             if (res == "accepted")
             {
                 found = true;
@@ -112,6 +113,7 @@ int main()
             st.push(res[0]);
         }
         string res = PT[st.top()][str[ptr]];
+        cout << st.top() << " " << str[ptr] << " --> " << res << endl;
         if (res == "accepted")
         {
             found = true;
@@ -123,6 +125,7 @@ int main()
             int nth_g = res[1] - 48;
             nth_g--;
             int len = m[nth_g].second.size();
+            len *= 2;
             while (len--)
             {
                 st.pop();
