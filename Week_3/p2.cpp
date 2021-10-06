@@ -249,6 +249,8 @@ S=AA
 A=aA|b
 S
 
+
+SAMPLE INPUT:3
 2
 +
 i
