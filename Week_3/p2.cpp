@@ -4,7 +4,6 @@ using namespace std;
 
 void compute_items(char c, unordered_map<char, set<string>> &m, vector<bool> &is_computed, unordered_map<char, unordered_map<char, set<string>>> &items, unordered_set<char> &nter)
 {
-
     items[c][c] = m[c];
 
     for (auto j : m[c])
@@ -13,7 +12,7 @@ void compute_items(char c, unordered_map<char, set<string>> &m, vector<bool> &is
         if (nter.find(j[1]) != nter.end())
         {
 
-            if (is_computed[c] == false)
+            if (is_computed[c] == false && c != j[1])
                 compute_items(j[1], m, is_computed, items, nter);
 
             for (auto k : items[j[1]])
@@ -147,14 +146,17 @@ int main()
 
     grammar[0] = str;
 
-    cout << endl << endl;
+    cout << endl
+         << endl;
     cout << "The augmented grammar is:" << endl;
 
-    for(int i=0;i<=n_pro;i++)
+    for (int i = 0; i <= n_pro; i++)
         cout << grammar[i] << endl;
 
-    cout << endl << endl;
-    cout << "The states for the given grammar are: " << endl << endl;
+    cout << endl
+         << endl;
+    cout << "The states for the given grammar are: " << endl
+         << endl;
 
     unordered_map<char, set<string>> m;
 
@@ -180,6 +182,11 @@ int main()
     unordered_map<int, unordered_map<char, set<string>>> st;
 
     compute_items('Z', m, is_computed, items, nter);
+    for (auto i : nter)
+    {
+        if (is_computed[i] == false)
+            compute_items(i, m, is_computed, items, nter);
+    }
 
     cout << endl;
     cout << "State 0:" << endl;
@@ -192,12 +199,10 @@ int main()
         }
     }
 
-   
     cout << endl
          << endl;
 
     int ptr = 0, states = 0;
-  
 
     while (ptr <= states)
     {
@@ -239,9 +244,10 @@ S
 
 SAMPLE INPUT:2
 
-2
+3
 a
 b
+#
 2
 A
 S
@@ -250,11 +256,27 @@ S=AA
 A=aA|b
 S
 
-
 SAMPLE INPUT:3
-2
+
+3
+a
+b
+#
+3
+A
+B
+S
+3
+S=AaAb|BbBa
+A=#
+B=#
+
+
+SAMPLE INPUT:4
+3
 +
 i
+#
 2
 E
 T
@@ -262,6 +284,29 @@ T
 E=T+E
 E=T
 T=i
+E
+
+E->E+T | T
+
+T->T*F | F
+
+F->(E) | id
+
+
+5
++
+*
+(
+)
+i
+3
+E
+T
+F
+3
+E=E+T|T
+T=T*F|F
+F=(E)|i
 E
 
 */
