@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void compute_items(char c, unordered_map<char, set<string>> &m, vector<bool> &is_computed, unordered_map<char, unordered_map<char, set<string>>> &items, unordered_set<char> &nter)
+void compute_closure(char c, unordered_map<char, set<string>> &m, vector<bool> &is_computed, unordered_map<char, unordered_map<char, set<string>>> &items, unordered_set<char> &nter)
 {
     items[c][c] = m[c];
 
@@ -13,7 +13,7 @@ void compute_items(char c, unordered_map<char, set<string>> &m, vector<bool> &is
         {
 
             if (is_computed[c] == false && c != j[1])
-                compute_items(j[1], m, is_computed, items, nter);
+                compute_closure(j[1], m, is_computed, items, nter);
 
             for (auto k : items[j[1]])
             {
@@ -181,11 +181,11 @@ int main()
     unordered_map<char, unordered_map<char, set<string>>> items;
     unordered_map<int, unordered_map<char, set<string>>> st;
 
-    compute_items('Z', m, is_computed, items, nter);
+    compute_closure('Z', m, is_computed, items, nter);
     for (auto i : nter)
     {
         if (is_computed[i] == false)
-            compute_items(i, m, is_computed, items, nter);
+            compute_closure(i, m, is_computed, items, nter);
     }
 
     cout << endl;
@@ -285,12 +285,6 @@ E=T+E
 E=T
 T=i
 E
-
-E->E+T | T
-
-T->T*F | F
-
-F->(E) | id
 
 
 5
