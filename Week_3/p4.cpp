@@ -274,7 +274,7 @@ int main()
             {
                 for (auto i : ter)
                     PT[ptr][i] = "^";
-                PT[ptr]['#'] = "accept";
+                PT[ptr]['$'] = "accept";
                 ptr++;
                 continue;
             }
@@ -334,7 +334,7 @@ int main()
 
     string test_str;
     cin >> test_str;
-    test_str.push_back('#');
+    test_str.push_back('$');
 
     stack<char> st_data;
     st_data.push('0');
@@ -427,7 +427,7 @@ SAMPLE INPUT:2
 3
 a
 b
-#
+$
 2
 A
 S
@@ -435,5 +435,7 @@ S
 S=AA
 A=aA|b
 S
+
+
 
 */
