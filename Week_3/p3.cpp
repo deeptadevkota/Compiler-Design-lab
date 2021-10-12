@@ -9,15 +9,19 @@
 
 using namespace std;
 
-unordered_map<char, unordered_map<string,int>> grammar;
+unordered_map<char, unordered_map<string,int>> grammar;    //store grammar
 
-vector<set<pair<char,string>>> states;
-set<set<pair<char,string>>> set_states;
-unordered_map<char,set<pair<char,string>>> closures;
-vector<unordered_map<char,int>> map_states;
+unordered_map<char,set<pair<char,string>>> closures; //stores closures for each non-terminal, each non-terminal corresponds to set of LR(0) items
+
+vector<set<pair<char,string>>> states;              //store states, each state is a set of pair formed by the nonterminal and corresponding scanned string
+set<set<pair<char,string>>> set_states;             //stores states, just to check if a state is already present or not
+
+vector<pair<int,int>> reduced_states;               //to check which states contain reduced items, (0,-1) in case it doesn't else (1,production_no)
+
+vector<unordered_map<char,int>> map_states;        //map transition of each states on terminals and nonterminals to other states => GOTO(state,c)
 
 
-//swap function to swap two charaters 
+//swap function to swap two charaters at index and index+1
 string swap(string str, int index)
 {
     char c;
@@ -27,6 +31,7 @@ string swap(string str, int index)
     return str;
 }
 
+//function to get position of "." in string
 int getPositionOfScannedProd(string str)
 {
     int index;
@@ -39,10 +44,11 @@ int getPositionOfScannedProd(string str)
     return index;
 }
 
+//function to compute closures
 void compute_closures(char nt)
 {
 
-    if(closures.find(nt) == closures.end())
+    if(closures.find(nt) == closures.end()) //compute only if closure is not computed
     {
         closures.insert(make_pair(nt,set<pair<char,string>>()));
 
@@ -50,12 +56,12 @@ void compute_closures(char nt)
 
         for(auto itr:prod)
         {
-            string p = "." + itr.first;
+            string p = "." + itr.first;                //append "." to the production
             closures[nt].insert(make_pair(nt,p));
 
-            if((p[1]>=65 && p[1]<=90) && p[1] != nt)
+            if((p[1]>=65 && p[1]<=90) && p[1] != nt)     //if the first letter is non-terminal then add its closure 
             {
-                if(closures.find(p[1]) == closures.end())
+                if(closures.find(p[1]) == closures.end())    //if closure does not exist then compute
                 {
                     compute_closures(p[1]);
                 }
@@ -69,12 +75,16 @@ void compute_closures(char nt)
     return;
 }
 
+
+//function to generate all states or canonical items
 void generateStates(char start_symbol, vector<char> terminals, vector<char> nonTerminals)
 {
 
     int i, j;
 
+    /*---initialze states but inserting state 0-----*/
     states.push_back(set<pair<char,string>>());
+    reduced_states.push_back(make_pair(0,-1));
     string temp = ".";
     temp.push_back(start_symbol);
 
@@ -83,38 +93,56 @@ void generateStates(char start_symbol, vector<char> terminals, vector<char> nonT
     {
         states[0].insert(itr);
     }
+    /*-----------------*/
 
+    /*--Iterate over states to compute transtions----*/
     for(i=0;i<states.size();i++)
     {
-        unordered_map<char,set<pair<char,string>>> goto_map;
+        unordered_map<char,set<pair<char,string>>> goto_map;  //goto map to map transtion of state on terminal or non-terminal
         map_states.push_back(unordered_map<char,int>());
 
-        for(auto itr:states[i])
+        int reduced_flag = 0;        //check for reduced item
+        int g_no = -1;               //to get production no. in case state consists of reduced item
+
+        for(auto itr:states[i])         //iterate over all items in state
         {
             int posi;
             string prod = itr.second;
             char nt = itr.first;
 
-            posi = getPositionOfScannedProd(prod);
+            posi = getPositionOfScannedProd(prod);   //get the position until which string is scanned
 
-            if(posi == prod.length()-1)
+            if(posi == prod.length()-1)   //string is completely scanned hence the state consists of reduced item
+            {
+                reduced_flag = 1 ;
+                string p = prod;
+                p.pop_back();
+                g_no = grammar[nt][p];
                 continue;
+            }
             
-            prod = swap(prod,posi);
+            prod = swap(prod,posi);         //swap '.' with adjacent element
 
-            if(goto_map.find(prod[posi]) == goto_map.end())
+            if(goto_map.find(prod[posi]) == goto_map.end())       //add the item to goto_map of current state
             {
                 goto_map.insert(make_pair(prod[posi],set<pair<char,string>>()));
             }
 
             goto_map[prod[posi]].insert(make_pair(nt,prod));
 
-            if( (posi+2 >= prod.length()) || (prod[posi+2]<65 || prod[posi+2]>90))
+            if( (posi+2 >= prod.length()) || (prod[posi+2]<65 || prod[posi+2]>90))    //if goto was on terminal then continue
                 continue;
             
-            goto_map[prod[posi]].insert(closures[prod[posi+2]].begin(),closures[prod[posi+2]].end());
+            //if goto was on non-terminal then add closures of non-terminal to the goto_map
+            goto_map[prod[posi]].insert(closures[prod[posi+2]].begin(),closures[prod[posi+2]].end());  
+
         }
 
+        //assign flag and production number in reduced_state vector
+        reduced_states[i].first = reduced_flag;
+        reduced_states[i].second = g_no;
+
+        //check if transition sets are already present in states or needs to be added
         for(auto itr:goto_map)
         {
             int state_no;
@@ -122,28 +150,22 @@ void generateStates(char start_symbol, vector<char> terminals, vector<char> nonT
             {
                 set_states.insert(itr.second);
                 states.push_back(itr.second);
+                reduced_states.push_back(make_pair(0,-1));
                 state_no = states.size()-1;
             }
             else{
                 state_no = find(states.begin(), states.end(), itr.second) - states.begin();
             }
-            map_states[i].insert(make_pair(itr.first,state_no));
+
+            map_states[i].insert(make_pair(itr.first,state_no));   //map transition on curr element to corresponding state number
         }
 
     }
 
-    // cout << endl;
-    // for(i=0;i<map_states.size();i++)
-    // {
-    //     cout << "State " << i << endl;
-    //     for(auto itr:map_states[i])
-    //     {
-    //         cout << itr.first << ": " << itr.second << endl;
-    //     }
-    // }
-
 }
 
+
+//function to print all states
 void printStates(char start_symbol)
 {
     int i;
@@ -162,6 +184,8 @@ void printStates(char start_symbol)
     }
 }
 
+
+//function to print parsing table
 void printParsingTable(int n_terminals, int n_nonTerminals,vector<char> terminals, vector<char> nonTerminals, vector<vector<string>> parsing_table)
 {
 
@@ -216,6 +240,9 @@ int main(void)
 
     int n_terminals, n_nonTerminals, i, j, k, n_prod;
 
+
+    /*---------------Taking Input-------------------*/
+
     cout << "\nEnter the number of terminals: ";
     cin >> n_terminals;
 
@@ -259,7 +286,7 @@ int main(void)
         grammar.insert(make_pair(g[0],unordered_map<string,int>()));
 
         string temp;
-        for(j=3; j< g.length(); j++)
+        for(j=3; j< g.length(); j++)       //separate productions using '|' and add into grammar map
         {
             if(g[j] == '|')
             {
@@ -270,19 +297,28 @@ int main(void)
             }
         }
         grammar[g[0]].insert(make_pair(temp,++count));
+
     }
 
-    //augmenting grammar
+    /*-------------------------------------------*/
+
+
+    /*-------augmenting grammar----*/
     grammar.insert(make_pair('&',unordered_map<string,int>()));
     string temp;
     temp.push_back(start_symbol);
     grammar['&'].insert(make_pair(temp,++count));
+    /*---------------------------*/
+
 
     compute_closures(start_symbol);
 
     generateStates(start_symbol,terminals,nonTerminals);
 
     printStates(start_symbol);
+
+
+    /*--------------Computing Parsing table---------------------------*/
 
     int n_states = states.size();
 
@@ -291,6 +327,7 @@ int main(void)
     for(i=0;i<n_states;i++)
     {
 
+        /*----Check if current state corresponding to LR(0) item generated from augmented production--------------*/
         string temp;
         temp.push_back(start_symbol);
         temp += ".";
@@ -309,15 +346,15 @@ int main(void)
                     parsing_table[i][j] = "-";
                 }
             }
+            continue;
         }
+        /*-----------------------------------------------------------------*/
 
-        if(map_states[i].empty())
+
+        /*----------------Check if current state consists of reduced item----------------------*/
+        if(reduced_states[i].first == 1)
         {
-            auto itr = states[i].begin();
-            string temp = itr->second;
-            char nt = itr->first;
-            temp.pop_back();
-            int p_no = grammar[nt][temp];
+            int p_no = reduced_states[i].second;
             for(j=0;j<n_terminals+1;j++)
             {
                 parsing_table[i][j] = "r";
@@ -330,7 +367,10 @@ int main(void)
             }
             continue;
         }
+        /*-------------------------------------------------------------------*/
 
+
+        /*--------------Check for transtions on terminals and nonterminals-----------------------*/
         for(j=0;j<n_terminals;j++)
         {
             auto itr = map_states[i].find(terminals[j]);
@@ -356,8 +396,11 @@ int main(void)
                 parsing_table[i][k] = "-";
             }
         }
+        /*----------------------------------------------*/
 
     }
+
+    /*----------------------------------------------------------*/
 
     printParsingTable(n_terminals, n_nonTerminals, terminals, nonTerminals, parsing_table);
     
