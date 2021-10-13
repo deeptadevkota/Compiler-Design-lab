@@ -61,13 +61,16 @@ void calculateFirst(char nonTerminal)
             continue;
         }
         j=0;
+        if(productions[i][0] == nonTerminal)
+            continue;
         while(j<productions[i].length())
         {
             if(productions[i][j] < 65 || productions[i][j] > 90)  //terminal
             {
                 first_curr.push_back(productions[i][j]);
                 break;
-            }else{                                                //non-terminal
+            }
+            else{                                                //non-terminal
                 if(first[productions[i][j]].size() == 0)
                     calculateFirst(productions[i][j]);
                 for(int k=0;k<first[productions[i][j]].size();k++)
@@ -81,8 +84,6 @@ void calculateFirst(char nonTerminal)
                 }
             }
             if(!isEpsilon[productions[i][j]]){
-                if(j==productions.size()-1)
-                    first_curr.push_back('^');
                 break;
             }
             j++;
@@ -93,11 +94,7 @@ void calculateFirst(char nonTerminal)
     first_curr.resize(distance(first_curr.begin(),it));
     first[nonTerminal] = first_curr;
 
-    // cout << "first" << endl;
-    // cout << nonTerminal << endl;
-    // for(i=0;i<first_curr.size();i++)
-    //     cout << first_curr[i] << " ";
-    // cout << endl;
+
 }
 
 void calculateFollow()
@@ -122,13 +119,37 @@ void calculateFollow()
                 }else{
                     if(productions[j][l+1] < 65 || productions[j][l+1] > 90)
                         follow[productions[j][l]].push_back(productions[j][l+1]);
-                    else
+                    else if(!isEpsilon[productions[j][l+1]])
                         follow[productions[j][l]].insert(follow[productions[j][l]].end(),first[productions[j][l+1]].begin(),first[productions[j][l+1]].end());
+                    else {
+                        int k=l+1;
+                        while(k<productions[j].length())
+                        {
+                            if(productions[j][k] < 65 || productions[j][k] > 90)
+                            {
+                                follow[productions[j][l]].push_back(productions[j][k]);
+                                break;
+                            }else if(!isEpsilon[productions[j][k]])
+                            {
+                                follow[productions[j][l]].insert(follow[productions[j][l]].end(),first[productions[j][k]].begin(),first[productions[j][k]].end());
+                                break;
+                            }
+                            follow[productions[j][l]].insert(follow[productions[j][l]].end(),first[productions[j][k]].begin(),first[productions[j][k]].end());
+                            remove(follow[productions[j][l]].begin(), follow[productions[j][l]].end(), '^');
+                            k++;
+                        }
+                        if(k==productions[j].length())
+                        {
+                            follow[productions[j][l]].insert(follow[productions[j][l]].end(),follow[nonTerminal].begin(),follow[nonTerminal].end());
+                        }
+                        remove(follow[productions[j][l]].begin(), follow[productions[j][l]].end(), '^');
+                    }
                 }
             }
             if(productions[j][l] >= 65 && productions[j][l] <= 90){
                 follow[productions[j][l]].insert(follow[productions[j][l]].end(),follow[nonTerminal].begin(),follow[nonTerminal].end());
             }
+            remove(follow[productions[j][l]].begin(), follow[productions[j][l]].end(), '^');
         }
     }
 }
@@ -230,17 +251,19 @@ int main(void)
     {
         calculateFirst(itr.first);
     }
+
     calculateFollow();
- 
-    printFirst();
-    cout << endl;
-    printFollow();
 
     for(auto itr:production_table)
     {
         vector<char>::iterator it = unique(follow[itr.first].begin(),follow[itr.first].end());
         follow[itr.first].resize(distance(follow[itr.first].begin(),it));
     }
+ 
+    //printFirst();
+    // cout << endl;
+    // printFollow();
+
 
     char nonTerminal;
     vector<string> productions;
