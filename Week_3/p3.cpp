@@ -114,15 +114,22 @@ void generateStates(char start_symbol, vector<char> terminals, vector<char> nonT
 
             if(posi == prod.length()-1)   //string is completely scanned hence the state consists of reduced item
             {
-                if(reduced_flag == 0)
+                if(reduced_flag == 0) 
                     reduced_flag = 1;
-                else
-                    reduced_flag = -1 ;
+                else if(reduced_flag == 1)   //rr conflict
+                    reduced_flag = -1;
+                else                         //rr and sr conflict
+                    reduced_flag = -3;
                 string p = prod;
                 p.pop_back();
                 g_no = grammar[nt][p];
                 continue;
             }
+
+            if(reduced_flag == 1)      //sr conflict
+                reduced_flag = -2;
+            else if(reduced_flag == -1)   //rr and sr conflict
+                reduced_flag = -3;
             
             prod = swap(prod,posi);         //swap '.' with adjacent element
 
@@ -137,7 +144,9 @@ void generateStates(char start_symbol, vector<char> terminals, vector<char> nonT
                 continue;
             
             //if goto was on non-terminal then add closures of non-terminal to the goto_map
-            goto_map[prod[posi]].insert(closures[prod[posi+2]].begin(),closures[prod[posi+2]].end());  
+            goto_map[prod[posi]].insert(closures[prod[posi+2]].begin(),closures[prod[posi+2]].end()); 
+            
+
 
         }
 
@@ -331,7 +340,7 @@ int main(void)
 
     for(i=0;i<n_states;i++)
     {
-        if(reduced_states[i].first == -1)    //RR conflict
+        if(reduced_states[i].first <= -1)    //RR conflict
         {
             is_LR0=0;
             break;
@@ -365,12 +374,6 @@ int main(void)
         if(reduced_states[i].first == 1)
         {
             int p_no = reduced_states[i].second;
-
-            if(map_states[i].size()>1)    //SR conflict
-            {
-                is_LR0=0;
-                break;
-            }
 
             for(j=0;j<n_terminals+1;j++)
             {
@@ -422,7 +425,7 @@ int main(void)
     if(is_LR0==1)
         printParsingTable(n_terminals, n_nonTerminals, terminals, nonTerminals, parsing_table);
     else
-        cout << "Given grammar is not LR(0) grammar" << endl;
+        cout << "\nGiven grammar is not LR(0) grammar" << endl;
     
     return 0;
 }
