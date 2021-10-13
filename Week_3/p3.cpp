@@ -114,7 +114,10 @@ void generateStates(char start_symbol, vector<char> terminals, vector<char> nonT
 
             if(posi == prod.length()-1)   //string is completely scanned hence the state consists of reduced item
             {
-                reduced_flag = 1 ;
+                if(reduced_flag == 0)
+                    reduced_flag = 1;
+                else
+                    reduced_flag = -1 ;
                 string p = prod;
                 p.pop_back();
                 g_no = grammar[nt][p];
@@ -238,7 +241,7 @@ void printParsingTable(int n_terminals, int n_nonTerminals,vector<char> terminal
 int main(void)
 {
 
-    int n_terminals, n_nonTerminals, i, j, k, n_prod;
+    int n_terminals, n_nonTerminals, i, j, k, n_prod, is_LR0;
 
 
     /*---------------Taking Input-------------------*/
@@ -320,12 +323,19 @@ int main(void)
 
     /*--------------Computing Parsing table---------------------------*/
 
+    is_LR0 = 1;
+
     int n_states = states.size();
 
     vector<vector<string>> parsing_table(n_states,vector<string>(n_terminals + n_nonTerminals+1,""));
 
     for(i=0;i<n_states;i++)
     {
+        if(reduced_states[i].first == -1)    //RR conflict
+        {
+            is_LR0=0;
+            break;
+        }
 
         /*----Check if current state corresponding to LR(0) item generated from augmented production--------------*/
         string temp;
@@ -355,6 +365,13 @@ int main(void)
         if(reduced_states[i].first == 1)
         {
             int p_no = reduced_states[i].second;
+
+            if(map_states[i].size()>1)    //SR conflict
+            {
+                is_LR0=0;
+                break;
+            }
+
             for(j=0;j<n_terminals+1;j++)
             {
                 parsing_table[i][j] = "r";
@@ -402,7 +419,10 @@ int main(void)
 
     /*----------------------------------------------------------*/
 
-    printParsingTable(n_terminals, n_nonTerminals, terminals, nonTerminals, parsing_table);
+    if(is_LR0==1)
+        printParsingTable(n_terminals, n_nonTerminals, terminals, nonTerminals, parsing_table);
+    else
+        cout << "Given grammar is not LR(0) grammar" << endl;
     
     return 0;
 }
