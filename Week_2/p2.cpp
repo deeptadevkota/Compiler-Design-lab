@@ -13,6 +13,37 @@ unordered_map<char,vector<char>> first, follow;
 unordered_map<char,bool> isEpsilon;
 unordered_map<char,vector<string>> production_table;
 
+
+void printFollow()
+{
+    int i;
+    cout << "\nFollow:" << endl;
+    for(auto itr:follow)
+    {
+        cout << itr.first << " : ";
+        for(i=0;i<itr.second.size();i++)
+        {
+            cout << itr.second[i] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void printFirst()
+{
+    int i;
+    cout << "\nFirst:" << endl;
+    for(auto itr:first)
+    {
+        cout << itr.first << " : ";
+        for(i=0;i<itr.second.size();i++)
+        {
+            cout << itr.second[i] << " ";
+        }
+        cout << endl;
+    }
+}
+
 void calculateFirst(char nonTerminal)
 {
     int i,j;
@@ -102,6 +133,31 @@ void calculateFollow()
     }
 }
 
+vector<char> getFirst(string str)
+{
+    int i, j;
+    vector<char> v;
+    for(i=0;i<str.length();i++)
+    {
+        if(str[i]<65 || str[i]>90)
+        {
+            v.push_back(str[i]);
+            break;
+        }
+        int epsilon=0;
+        vector<char> firsts = first[str[i]];
+        for(j=0; j<firsts.size();j++)
+        {
+            if(firsts[i] == '^')
+                epsilon=1;
+            v.push_back(firsts[j]);
+        }
+        if(epsilon == 0)
+            break;
+    }
+    return v;
+}
+
 int main(void)
 {
     int n,i,j,n_terminals,n_nonTerminals;
@@ -176,15 +232,9 @@ int main(void)
     }
     calculateFollow();
  
-    // print follow
-    // cout << "Follows: " << endl;
-    // for(auto itr:follow)
-    // {
-    //     cout << itr.first << " : ";
-    //     for(j=0;j<itr.second.size();j++)
-    //         cout << itr.second[j] << " ";
-    //     cout << endl;
-    // }
+    printFirst();
+    cout << endl;
+    printFollow();
 
     for(auto itr:production_table)
     {
@@ -211,8 +261,12 @@ int main(void)
             {
                 parsing_table[nonTerminal][productions[i][0]] = productions[i];
             }else{
-                for(j=0;j<first[productions[i][0]].size();j++)
-                    parsing_table[nonTerminal][first[productions[i][0]][j]] = productions[i];
+                vector<char> firsts;
+                firsts = getFirst(productions[i]);
+                for(j=0;j<firsts.size();j++)
+                {
+                    parsing_table[nonTerminal][firsts[j]] = productions[i];
+                }
             }
         }
     }
