@@ -179,6 +179,42 @@ vector<char> getFirst(string str)
     return v;
 }
 
+void printParsingTable(vector<char> terminals, unordered_map<char,unordered_map<char,string>> parsing_table)
+{
+    int i;
+
+    //print parsing table
+    cout << "\nParsing Table:" << endl;
+    cout << setw(4) << left << "NT";
+    for(i=0;i<terminals.size();i++)
+    {
+        cout << setw(15) << terminals[i];
+    }
+    cout << endl;
+
+    cout << setw(4) << left << "--";
+    for(i=0;i<terminals.size();i++)
+    {
+        cout << setw(15) << "--------";
+    }
+    cout << endl;
+
+    for(auto itrPT:parsing_table)
+    {
+        char nonTerminal = itrPT.first;
+        cout << setw(4) << left << nonTerminal;
+        for(i=0;i<terminals.size();i++)
+        {
+            string s = parsing_table[nonTerminal][terminals[i]];
+            if(s.length()>0)
+                cout << setw(1) << left << nonTerminal << "->" << setw(12) << left << s;
+            else
+                cout << setw(15) << left << "-";
+        }
+        cout << endl;
+    }
+}
+
 int main(void)
 {
     int n,i,j,n_terminals,n_nonTerminals;
@@ -264,7 +300,7 @@ int main(void)
     // cout << endl;
     // printFollow();
 
-
+    int is_ll1 =1;
     char nonTerminal;
     vector<string> productions;
     
@@ -278,52 +314,50 @@ int main(void)
             if(productions[i]=="^")
             {
                 for(j=0;j<follow[nonTerminal].size();j++)
-                    parsing_table[nonTerminal][follow[nonTerminal][j]] = '^'; 
+                {
+                    if(parsing_table[nonTerminal][follow[nonTerminal][j]] != "")
+                    {
+                        is_ll1=0;
+                        break;
+                    }
+                    parsing_table[nonTerminal][follow[nonTerminal][j]] = '^';
+                }
+                     
             }
             else if(productions[i][0]<65 || productions[i][0]>90)
             {
+                if(parsing_table[nonTerminal][productions[i][0]] != "")
+                {
+                    is_ll1=0;
+                    break;
+                }
                 parsing_table[nonTerminal][productions[i][0]] = productions[i];
             }else{
                 vector<char> firsts;
                 firsts = getFirst(productions[i]);
                 for(j=0;j<firsts.size();j++)
                 {
+                    if(parsing_table[nonTerminal][firsts[j]] != "")
+                    {
+                        is_ll1=0;
+                        break;
+                    }
                     parsing_table[nonTerminal][firsts[j]] = productions[i];
                 }
             }
+            if(is_ll1==0)
+                break;
         }
+        if(is_ll1==0)
+                break;
     }
 
-    //print parsing table
-    cout << "\nParsing Table:" << endl;
-    cout << setw(4) << left << "NT";
-    for(i=0;i<terminals.size();i++)
-    {
-        cout << setw(15) << terminals[i];
-    }
-    cout << endl;
 
-    cout << setw(4) << left << "--";
-    for(i=0;i<terminals.size();i++)
-    {
-        cout << setw(15) << "--------";
-    }
-    cout << endl;
+    if(is_ll1 ==0)
+        cout << "\nGiven grammar is not LL1" << endl;
+    else
+        printParsingTable(terminals,parsing_table);
 
-    for(auto itrPT:parsing_table)
-    {
-        nonTerminal = itrPT.first;
-        cout << setw(4) << left << nonTerminal;
-        for(i=0;i<terminals.size();i++)
-        {
-            string s = parsing_table[nonTerminal][terminals[i]];
-            if(s.length()>0)
-                cout << setw(1) << left << nonTerminal << "->" << setw(12) << left << s;
-            else
-                cout << setw(15) << left << "-";
-        }
-        cout << endl;
-    }
 
     return 0;
 }
