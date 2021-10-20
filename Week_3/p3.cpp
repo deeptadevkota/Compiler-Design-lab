@@ -333,6 +333,7 @@ int main(void)
     /*--------------Computing Parsing table---------------------------*/
 
     is_LR0 = 1;
+    int rr=0,sr=0;
 
     int n_states = states.size();
 
@@ -343,6 +344,14 @@ int main(void)
         if(reduced_states[i].first <= -1)    //RR conflict
         {
             is_LR0=0;
+            if(reduced_states[i].first == -1)
+                rr = 1;
+            else if(reduced_states[i].first == -2)
+                sr = 1;
+            else
+            {
+                rr=sr=1;
+            }
             break;
         }
 
@@ -425,7 +434,15 @@ int main(void)
     if(is_LR0==1)
         printParsingTable(n_terminals, n_nonTerminals, terminals, nonTerminals, parsing_table);
     else
-        cout << "\nGiven grammar is not LR(0) grammar" << endl;
+    {
+        cout << "\nGiven grammar is not LR(0) grammar due to ";
+        if(rr==1 && sr == 1)
+            cout << "RR and SR conflict\n"<<endl;
+        else if(rr==1)
+            cout << "RR conflict\n"<<endl;
+        else
+            cout << "SR conflict\n"<<endl;
+    }
     
     return 0;
 }
