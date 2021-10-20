@@ -303,4 +303,17 @@ T=T*F|F
 F=(E)|i
 E
 
+
+3
+a
+b
+c
+2
+S
+A
+2
+S=A
+A=aAb|c
+S
+
 */
