@@ -95,7 +95,7 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
             if (nter.find(i) == nter.end())
             {
                 string pt_entry = "s";
-                pt_entry.push_back(itr + '0');
+                pt_entry += to_string(itr);
                 PT[ptr][i] = pt_entry;
             }
             else
@@ -115,7 +115,7 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
         if (nter.find(i) == nter.end())
         {
             string pt_entry = "s";
-            pt_entry.push_back(states + '0');
+            pt_entry += to_string(states);
             PT[ptr][i] = pt_entry;
         }
         else
@@ -125,14 +125,14 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
         }
 
         st[states] = temp;
-        cout << "State: " << states << endl;
-        for (auto i : temp)
-        {
-            for (auto j : i.second)
-                cout << i.first << " --> " << j << endl;
-        }
-        cout << endl
-             << endl;
+        // cout << "State: " << states << endl;
+        // for (auto i : temp)
+        // {
+        //     for (auto j : i.second)
+        //         cout << i.first << " --> " << j << endl;
+        // }
+        // cout << endl
+        //      << endl;
     }
 }
 
@@ -154,36 +154,39 @@ bool check_reduce(unordered_map<int, unordered_map<char, set<string>>> &st, int 
 
 int main()
 {
+    cout << "Enter number the terminals" << endl;
     int n_ter, n_nter;
     cin >> n_ter;
 
     unordered_set<char> ter, nter;
     char c;
-
+    cout << "Enter number the terminals" << endl;
     for (int i = 0; i < n_ter; i++)
     {
         cin >> c;
         ter.insert(c);
     }
-
+    n_ter++;
+    ter.insert('$');
+    cout << "Enter the number  of non-terminals" << endl;
     cin >> n_nter;
-
+    cout << "Enter  the non-terminals" << endl;
     for (int i = 0; i < n_nter; i++)
     {
         cin >> c;
         nter.insert(c);
     }
-
+    cout << "Enter number of production" << endl;
     int n_pro;
     cin >> n_pro;
-
+    cout << "Enter the productions eg. S=A|Bb" << endl;
     vector<string> grammar(n_pro + 1);
 
     for (int i = 1; i <= n_pro; i++)
     {
         cin >> grammar[i];
     }
-
+    cout << "Enter the start symbol" << endl;
     char start_symbol;
     cin >> start_symbol;
 
@@ -260,6 +263,7 @@ int main()
          << endl;
 
     int ptr = 0, states = 0;
+    bool is_lr = true;
 
     while (ptr <= states)
     {
@@ -269,6 +273,22 @@ int main()
         }
         if (check_reduce(st, ptr))
         {
+            //INSERT IF CONDITION
+            //CHECK FOR RR OR SR CONFLICTS
+            int cnt_grammar = 0;
+            for (auto i : st[ptr])
+            {
+                cnt_grammar++;
+                for (auto k : i.second)
+                {
+                    cnt_grammar++;
+                }
+            }
+            if (cnt_grammar != 2)
+            {
+                is_lr = false;
+                break;
+            }
             char LHS = (*st[ptr].begin()).first;
             if (LHS == 'Z')
             {
@@ -294,7 +314,7 @@ int main()
                 {
 
                     string pt_entry = "r";
-                    pt_entry.push_back(nth_grammar + '0');
+                    pt_entry += to_string(nth_grammar);
 
                     for (auto i : ter)
                         PT[ptr][i] = pt_entry;
@@ -308,13 +328,33 @@ int main()
             }
         ptr++;
     }
-
+    if (is_lr == false)
+    {
+        cout << "The given grammar is not LR(0)" << endl;
+        return 0;
+    }
+    cout << endl
+         << endl;
+    for (int l = 0; l <= states; l++)
+    {
+        cout << "State: " << l << endl;
+        for (auto i : st[l])
+        {
+            for (auto j : i.second)
+                cout << i.first << " --> " << j << endl;
+        }
+        cout << endl
+             << endl;
+    }
+    cout << endl
+         << endl;
     cout << "The parsing table is obtained as follows: " << endl
          << endl;
     cout << '\t';
 
     for (auto i : ter)
         cout << i << '\t';
+
     for (auto i : nter)
         cout << i << '\t';
     cout << endl;
@@ -324,6 +364,7 @@ int main()
         cout << i << '\t';
         for (auto j : ter)
             cout << PT[i][j] << '\t';
+
         for (auto j : nter)
             cout << PT[i][j] << '\t';
         cout << endl;
@@ -332,6 +373,7 @@ int main()
     cout << endl
          << endl;
 
+    cout << "Enter the string for testing" << endl;
     string test_str;
     cin >> test_str;
     test_str.push_back('$');
@@ -422,12 +464,23 @@ int main()
 
 /*
 
-SAMPLE INPUT:2
 
-3
+4
 a
 b
-$
+c
+#
+2
+S
+A
+2
+S=A|#
+A=aAb|c
+S
+
+2
+a
+b
 2
 A
 S
@@ -435,6 +488,23 @@ S
 S=AA
 A=aA|b
 S
+
+
+5
++
+*
+(
+)
+i
+3
+E
+T
+F
+3
+E=E+T|T
+T=T*F|F
+F=(E)|i
+E
 
 
 

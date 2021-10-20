@@ -108,36 +108,40 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
 
 int main()
 {
+    cout << "Enter the number of terminals" << endl;
     int n_ter, n_nter;
     cin >> n_ter;
 
     unordered_set<char> ter, nter;
     char c;
-
+    cout << "Enter number the terminals" << endl;
     for (int i = 0; i < n_ter; i++)
     {
         cin >> c;
         ter.insert(c);
     }
 
+    cout << "Enter the number  of non-terminals" << endl;
     cin >> n_nter;
 
+    cout << "Enter  the non-terminals" << endl;
     for (int i = 0; i < n_nter; i++)
     {
         cin >> c;
         nter.insert(c);
     }
-
+    cout << "Enter number of production" << endl;
     int n_pro;
     cin >> n_pro;
 
+    cout << "Enter the productions eg. S=A|Bb" << endl;
     vector<string> grammar(n_pro + 1);
 
     for (int i = 1; i <= n_pro; i++)
     {
         cin >> grammar[i];
     }
-
+    cout << "Enter the start symbol" << endl;
     char start_symbol;
     cin >> start_symbol;
 
@@ -273,11 +277,11 @@ B=#
 
 
 SAMPLE INPUT:4
-3
+4
 +
 i
 #
-2
+$
 E
 T
 3
