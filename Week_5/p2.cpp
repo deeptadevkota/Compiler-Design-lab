@@ -133,7 +133,7 @@ bool check(string s, char c)
     return false;
 }
 
-void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_map<char, set<pair<string, string>>>> &st, unordered_map<char, unordered_map<string, unordered_map<char, set<pair<string, string>>>>> &items, unordered_map<char, set<string>> &m, unordered_set<char> &nter, unordered_map<char, unordered_map<string, bool>> &isComputed, vector<bool> &epsilon, vector<string> &first)
+void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_map<char, set<pair<string, string>>>> &st, unordered_map<char, unordered_map<string, unordered_map<char, set<pair<string, string>>>>> &items, unordered_map<char, set<string>> &m, unordered_set<char> &nter, unordered_map<char, unordered_map<string, bool>> &isComputed, vector<bool> &epsilon, vector<string> &first, unordered_map<int, unordered_map<char, string>> &PT)
 {
     unordered_map<char, set<pair<string, string>>> temp;
     for (auto j : st[ptr])
@@ -185,12 +185,27 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
         }
     }
     if (temp.empty())
+    {
+        PT[ptr][i] = "^";
         return;
+    }
     int flag = 0;
     for (int itr = 0; itr <= states; itr++)
     {
         if (st[itr] == temp)
         {
+            if (nter.find(i) == nter.end())
+            {
+                string pt_entry = "s";
+                pt_entry += to_string(itr);
+                PT[ptr][i] = pt_entry;
+            }
+            else
+            {
+                string pt_entry = to_string(itr);
+                PT[ptr][i] = pt_entry;
+            }
+
             flag = 1;
             break;
         }
@@ -198,6 +213,19 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
     if (flag == 0)
     {
         states++;
+
+        if (nter.find(i) == nter.end())
+        {
+            string pt_entry = "s";
+            pt_entry += to_string(states);
+            PT[ptr][i] = pt_entry;
+        }
+        else
+        {
+            string pt_entry = to_string(states);
+            PT[ptr][i] = pt_entry;
+        }
+
         st[states] = temp;
         cout << "State: " << states << endl;
         for (auto i : temp)
@@ -215,6 +243,15 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
         cout << endl
              << endl;
     }
+}
+
+bool check_reduce(string str)
+{
+    cout << "checkreduce: " << str << endl;
+    if (str[str.size() - 1] == '.')
+        return true;
+
+    return false;
 }
 
 int main()
@@ -276,6 +313,9 @@ int main()
     //     cout << grammar[i] << endl;
 
     unordered_map<char, set<string>> m;
+    unordered_map<int, pair<char, string>> ordered_grammar;
+
+    int cnt = 0;
 
     for (int i = 0; i <= n_pro; i++)
     {
@@ -285,13 +325,21 @@ int main()
             if (grammar[i][j] == '|')
             {
                 m[grammar[i][0]].insert(p);
+                ordered_grammar[cnt].first = grammar[i][0];
+                ordered_grammar[cnt].second = p;
+                cnt++;
                 p = ".";
                 continue;
             }
             p += grammar[i][j];
         }
         if (p != ".")
+        {
+            ordered_grammar[cnt].first = grammar[i][0];
+            ordered_grammar[cnt].second = p;
+            cnt++;
             m[grammar[i][0]].insert(p);
+        }
     }
 
     for (int i = 0; i < n_pro; i++)
@@ -304,6 +352,7 @@ int main()
     unordered_map<char, unordered_map<string, unordered_map<char, set<pair<string, string>>>>> items;
     unordered_map<int, unordered_map<char, set<pair<string, string>>>> st;
     unordered_map<char, unordered_map<string, bool>> isComputed;
+    unordered_map<int, unordered_map<char, string>> PT;
 
     compute_closer('Z', "$", m, nter, items, isComputed, epsilon, first);
 
@@ -332,17 +381,80 @@ int main()
     cout << endl
          << endl;
 
-    // compute_states(ptr, states, 'S', st, items, m, nter, isComputed, epsilon, first);
+    //take care of the reduce and accepted operations
 
     while (ptr <= states)
     {
         for (auto i : nter)
-            compute_states(ptr, states, i, st, items, m, nter, isComputed, epsilon, first);
+            compute_states(ptr, states, i, st, items, m, nter, isComputed, epsilon, first, PT);
 
         for (auto i : ter)
-            compute_states(ptr, states, i, st, items, m, nter, isComputed, epsilon, first);
+            compute_states(ptr, states, i, st, items, m, nter, isComputed, epsilon, first, PT);
+
+        for (auto i : st[ptr])
+        {
+            for (auto j : i.second)
+            {
+                if (check_reduce(j.first))
+                {
+                    cout << "HERE" << endl;
+                    if (i.first == 'Z')
+                    {
+                        PT[ptr]['$'] = "accept";
+                    }
+                    else
+                    {
+                        for (auto x : ordered_grammar)
+                        {
+                            int nth_grammar = x.first;
+                            auto pair_grammar = x.second;
+                            string RHS = "." + j.first;
+                            RHS.pop_back();
+
+                            if ((pair_grammar.first == i.first) && (pair_grammar.second == RHS))
+                            {
+                                //then it is a reduce move
+                                for (auto loop : j.second)
+                                {
+                                    PT[ptr][loop] = "r" + to_string(nth_grammar);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         ptr++;
     }
+
+    cout << endl
+         << endl;
+    cout << "The parsing table is obtained as follows: " << endl
+         << endl;
+    cout << '\t';
+
+    for (auto i : ter)
+        cout << i << '\t';
+    cout << '$' << '\t';
+    for (auto i : nter)
+        cout << i << '\t';
+    cout << endl;
+
+    for (int i = 0; i <= states; i++)
+    {
+        cout << i << '\t';
+        for (auto j : ter)
+            cout << PT[i][j] << '\t';
+        if (PT[i]['$'] == "")
+            PT[i]['$'] = "^";
+        cout << PT[i]['$'] << '\t';
+        for (auto j : nter)
+            cout << PT[i][j] << '\t';
+        cout << endl;
+    }
+
+    cout << endl
+         << endl;
 
     return 0;
 }
