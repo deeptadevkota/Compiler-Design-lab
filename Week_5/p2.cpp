@@ -181,13 +181,44 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
                             temp[l.first].insert(loop);
                         }
                     }
+                    swap(handle[ind], handle[ind + 1]);
+                    temp[j.first].insert({handle, lookup});
                 }
-                swap(handle[ind], handle[ind + 1]);
-                temp[j.first].insert({handle, lookup});
 
                 // temp[j.first].insert(k);
             }
         }
+    }
+    if (temp.empty())
+        return;
+    int flag = 0;
+    for (int itr = 0; itr <= states; itr++)
+    {
+        if (st[itr] == temp)
+        {
+            flag = 1;
+            break;
+        }
+    }
+    if (flag == 0)
+    {
+        states++;
+        st[states] = temp;
+        cout << "State: " << states << endl;
+        for (auto i : temp)
+        {
+            for (auto j : i.second)
+            {
+                cout << i.first << " --> " << j.first << endl;
+                for (int k = 0; k < j.second.size() - 1; k++)
+                {
+                    cout << j.second[k] << "|";
+                }
+                cout << j.second[j.second.size() - 1] << endl;
+            }
+        }
+        cout << endl
+             << endl;
     }
 }
 
