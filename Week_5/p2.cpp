@@ -87,7 +87,7 @@ string firstForString(string str, vector<bool> &epsilon, vector<string> &first)
 //implement this function for today
 void compute_closer(char c, string lookup, unordered_map<char, set<string>> &m, unordered_set<char> &nter, unordered_map<char, unordered_map<string, unordered_map<char, set<pair<string, string>>>>> &items, unordered_map<char, unordered_map<string, bool>> &isComputed, vector<bool> &epsilon, vector<string> &first)
 {
-    cout << "Debug: " << c << " " << lookup << endl;
+    //cout << "Debug: " << c << " " << lookup << endl;
     set<pair<string, string>> temp;
     //set up the variable temp
     for (auto i : m[c])
@@ -116,7 +116,7 @@ void compute_closer(char c, string lookup, unordered_map<char, set<string>> &m, 
                 new_lookup += firstForString(temp, epsilon, first);
             }
 
-            if (isComputed[j[1]][new_lookup] == false)
+            if (isComputed[j[1]][new_lookup] == false && (c != j[1] || new_lookup != lookup))
             {
                 //for the subsequent recursive call the lookup variable would change
                 compute_closer(j[1], new_lookup, m, nter, items, isComputed, epsilon, first);
@@ -168,12 +168,12 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
             {
                 int ind = find_index(handle);
 
-                if ((ind + 1) < handle.size())
+                if ((ind + 2) < handle.size())
                 {
-                    if (isComputed[handle[i + 1]][lookup] == false)
-                        compute_closer(handle[ind + 1], lookup, m, nter, items, isComputed, epsilon, first);
+                    if (isComputed[handle[i + 2]][lookup] == false)
+                        compute_closer(handle[ind + 2], lookup, m, nter, items, isComputed, epsilon, first);
 
-                    for (auto l : items[handle[ind + 1]][lookup])
+                    for (auto l : items[handle[ind + 2]][lookup])
                     {
 
                         for (auto loop : l.second)
@@ -181,10 +181,12 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
                             temp[l.first].insert(loop);
                         }
                     }
+                }
+                if ((ind + 1) < handle.size())
+                {
                     swap(handle[ind], handle[ind + 1]);
                     temp[j.first].insert({handle, lookup});
                 }
-
                 // temp[j.first].insert(k);
             }
         }
@@ -209,7 +211,7 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
         {
             for (auto j : i.second)
             {
-                cout << i.first << " --> " << j.first << endl;
+                cout << i.first << " --> " << j.first << " , ";
                 for (int k = 0; k < j.second.size() - 1; k++)
                 {
                     cout << j.second[k] << "|";
@@ -336,7 +338,20 @@ int main()
         }
     }
 
-    cout << "COMPUTED" << endl;
+    cout << "COMPUTED STATE-0" << endl
+         << endl;
+
+    // compute_states(ptr, states, 'S', st, items, m, nter, isComputed, epsilon, first);
+
+    while (ptr <= states)
+    {
+        for (auto i : nter)
+            compute_states(ptr, states, i, st, items, m, nter, isComputed, epsilon, first);
+
+        for (auto i : ter)
+            compute_states(ptr, states, i, st, items, m, nter, isComputed, epsilon, first);
+        ptr++;
+    }
 
     return 0;
 }
