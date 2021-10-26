@@ -162,7 +162,7 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
                         temp.push_back(i);
                         new_lookup += firstForString(temp, epsilon, first);
                     }
-                    
+
                     if (isComputed[handle[i + 2]][new_lookup] == false)
                         compute_closer(handle[ind + 2], new_lookup, m, nter, items, isComputed, epsilon, first);
 
@@ -309,14 +309,13 @@ int main()
 
     cout << endl
          << endl;
-    cout << "State: 0" << endl
-         << endl;
 
     //basically printing the closure of Z on lookup '$'
     // storing the state 1 in a variable
 
     int ptr = 0, states = 0;
 
+    cout << "State: 0" << endl;
     for (auto i : items['Z']["$"])
     {
         st[0][i.first] = i.second;
@@ -330,8 +329,7 @@ int main()
             cout << j.second[j.second.size() - 1] << endl;
         }
     }
-
-    cout << "COMPUTED STATE-0" << endl
+    cout << endl
          << endl;
 
     // compute_states(ptr, states, 'S', st, items, m, nter, isComputed, epsilon, first);
