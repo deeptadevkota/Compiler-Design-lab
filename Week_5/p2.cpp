@@ -307,10 +307,7 @@ int main()
 
     cout << endl
          << endl;
-    // cout << "The augmented grammar is:" << endl;
-
-    // for (int i = 0; i <= n_pro; i++)
-    //     cout << grammar[i] << endl;
+  
 
     unordered_map<char, set<string>> m;
     unordered_map<int, pair<char, string>> ordered_grammar;
@@ -380,8 +377,6 @@ int main()
     }
     cout << endl
          << endl;
-
-    //take care of the reduce and accepted operations
 
     while (ptr <= states)
     {
