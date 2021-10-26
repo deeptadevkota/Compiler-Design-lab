@@ -23,7 +23,7 @@ now instead of precomputing items what can be done is, we need to send request e
 
 using namespace std;
 
-void calculateFirst(char c, unordered_map<char, vector<string>> &m, vector<string> &first, vector<bool> &vis, vector<bool> &epsilon)
+void calculateFirst(char c, unordered_map<char, set<string>> &m, vector<string> &first, vector<bool> &vis, vector<bool> &epsilon)
 {
     string first_c = "";
     for (string i : m[c])
@@ -65,8 +65,27 @@ void calculateFirst(char c, unordered_map<char, vector<string>> &m, vector<strin
     return;
 }
 
+string firstForString(string str, vector<bool> &epsilon, vector<string> &first)
+{
+    int i = 0;
+    string req = "";
+
+    while (i < str.size())
+    {
+        req += first[str[i]];
+        if (epsilon[str[i]] == true)
+        {
+            i++;
+        }
+        else
+            break;
+    }
+
+    return req;
+}
+
 //implement this function for today
-void compute_closer(char c, string lookup, unordered_map<char, set<string>> &m, unordered_set<char> &nter, unordered_map<char, unordered_map<string, unordered_map<char, set<pair<string, string>>>>> items, unordered_map<char, unordered_map<string, bool>> &isComputed)
+void compute_closer(char c, string lookup, unordered_map<char, set<string>> &m, unordered_set<char> &nter, unordered_map<char, unordered_map<string, unordered_map<char, set<pair<string, string>>>>> items, unordered_map<char, unordered_map<string, bool>> &isComputed, vector<bool> &epsilon, vector<string> &first)
 {
     set<pair<string, string>> temp;
     //set up the variable temp
@@ -76,27 +95,35 @@ void compute_closer(char c, string lookup, unordered_map<char, set<string>> &m, 
     }
 
     items[c][lookup][c] = temp;
-    /*
+    
     for (auto j : m[c])
     {
+
+        //j[1] can be further closured
         if (nter.find(j[1]) != nter.end())
         {
+            string new_str=j.substr(2,j.size());
+            string new_lookup="";
+            for(int i:lookup)
+            {
+                string temp=new_str;
+                temp.push_back(i);
+                new_lookup+=firstForString(temp, epsilon, first);
+            }
+
             
-            new_lookup = first(j[2]..j[n] + lookup)
             if(isComputed[j[1]][new_lookup]==false)
             {
-                
-                for the subsequent recursive call the lookup variable would change
-
-                compute_closer(j[1], new_lookup, m , nter, items, isComputed)
+                //for the subsequent recursive call the lookup variable would change
+                compute_closer(j[1], new_lookup, m , nter, items, isComputed, epsilon,first);
             }
-            for (auto k : items[j[1]][lookup])
+            for (auto k : items[j[1]][new_lookup])
             {
                 items[c][lookup][k.first]=k.second;
             }
         }
     }
-    */
+    
     isComputed[c][lookup] = true;
 }
 
@@ -108,12 +135,18 @@ int main()
     cin >> n_ter;
 
     unordered_set<char> ter, nter;
+    vector<string> first(256, "");
+    vector<bool> vis(256, 0);
+    vector<bool> epsilon(256, false);
+
     char c;
     cout << "Enter number the terminals" << endl;
     for (int i = 0; i < n_ter; i++)
     {
         cin >> c;
         ter.insert(c);
+        first[c] = c;
+        vis[c] = 1;
     }
 
     cout << "Enter the number  of non-terminals" << endl;
@@ -171,12 +204,12 @@ int main()
             m[grammar[i][0]].insert(p);
     }
 
-    //first calculate the very first state
+    for (int i = 0; i < n_pro; i++)
+    {
+        if (vis[grammar[i][0]] == 0)
+        {
+            calculateFirst(grammar[i][0], m, first, vis, epsilon);
+        }
+    }
 
-    /*
-
-    
-
-
-    */
 }
