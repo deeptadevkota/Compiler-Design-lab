@@ -131,6 +131,66 @@ void compute_closer(char c, string lookup, unordered_map<char, set<string>> &m, 
     isComputed[c][lookup] = true;
 }
 
+bool check(string s, char c)
+{
+    int n = s.size();
+    for (int i = 0; i < n; i++)
+    {
+        if (s[i] == '.' && (i + 1) < n && s[i + 1] == c)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+int find_index(string str)
+{
+    for (int i = 0; i < str.size(); i++)
+    {
+        if (str[i] == '.')
+            return i;
+    }
+    return 1;
+}
+
+void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_map<char, set<pair<string, string>>>> &st, unordered_map<char, unordered_map<string, unordered_map<char, set<pair<string, string>>>>> &items, unordered_map<char, set<string>> &m, unordered_set<char> &nter, unordered_map<char, unordered_map<string, bool>> &isComputed, vector<bool> &epsilon, vector<string> &first)
+{
+    unordered_map<char, set<pair<string, string>>> temp;
+    for (auto j : st[ptr])
+    {
+        for (auto k : j.second)
+        {
+            string handle = k.first;
+            string lookup = k.second;
+
+            if (check(handle, i))
+            {
+                int ind = find_index(handle);
+
+                if ((ind + 1) < handle.size())
+                {
+                    if (isComputed[handle[i + 1]][lookup] == false)
+                        compute_closer(handle[ind + 1], lookup, m, nter, items, isComputed, epsilon, first);
+
+                    for (auto l : items[handle[ind + 1]][lookup])
+                    {
+
+                        for (auto loop : l.second)
+                        {
+                            temp[l.first].insert(loop);
+                        }
+                    }
+                }
+                swap(handle[ind], handle[ind + 1]);
+                temp[j.first].insert({handle, lookup});
+
+                // temp[j.first].insert(k);
+            }
+        }
+    }
+}
+
 int main()
 {
 
@@ -216,6 +276,7 @@ int main()
         }
     }
     unordered_map<char, unordered_map<string, unordered_map<char, set<pair<string, string>>>>> items;
+    unordered_map<int, unordered_map<char, set<pair<string, string>>>> st;
     unordered_map<char, unordered_map<string, bool>> isComputed;
 
     compute_closer('Z', "$", m, nter, items, isComputed, epsilon, first);
@@ -226,9 +287,13 @@ int main()
          << endl;
 
     //basically printing the closure of Z on lookup '$'
+    // storing the state 1 in a variable
+
+    int ptr = 0, states = 0;
 
     for (auto i : items['Z']["$"])
     {
+        st[0][i.first] = i.second;
         for (auto j : i.second)
         {
             cout << i.first << " --> " << j.first << " , ";
@@ -241,6 +306,7 @@ int main()
     }
 
     cout << "COMPUTED" << endl;
+
     return 0;
 }
 
