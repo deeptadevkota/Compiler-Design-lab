@@ -84,7 +84,16 @@ string firstForString(string str, vector<bool> &epsilon, vector<string> &first)
     return req;
 }
 
-//implement this function for today
+int find_index(string str)
+{
+    for (int i = 0; i < str.size(); i++)
+    {
+        if (str[i] == '.')
+            return i;
+    }
+    return 1;
+}
+
 void compute_closer(char c, string lookup, unordered_map<char, set<string>> &m, unordered_set<char> &nter, unordered_map<char, unordered_map<string, unordered_map<char, set<pair<string, string>>>>> &items, unordered_map<char, unordered_map<string, bool>> &isComputed, vector<bool> &epsilon, vector<string> &first)
 {
     //cout << "Debug: " << c << " " << lookup << endl;
@@ -101,6 +110,7 @@ void compute_closer(char c, string lookup, unordered_map<char, set<string>> &m, 
     {
 
         //j[1] can be further closured
+
         if (nter.find(j[1]) != nter.end())
         {
 
@@ -144,16 +154,6 @@ bool check(string s, char c)
     return false;
 }
 
-int find_index(string str)
-{
-    for (int i = 0; i < str.size(); i++)
-    {
-        if (str[i] == '.')
-            return i;
-    }
-    return 1;
-}
-
 void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_map<char, set<pair<string, string>>>> &st, unordered_map<char, unordered_map<string, unordered_map<char, set<pair<string, string>>>>> &items, unordered_map<char, set<string>> &m, unordered_set<char> &nter, unordered_map<char, unordered_map<string, bool>> &isComputed, vector<bool> &epsilon, vector<string> &first)
 {
     unordered_map<char, set<pair<string, string>>> temp;
@@ -170,10 +170,25 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
 
                 if ((ind + 2) < handle.size())
                 {
-                    if (isComputed[handle[i + 2]][lookup] == false)
-                        compute_closer(handle[ind + 2], lookup, m, nter, items, isComputed, epsilon, first);
+                    //here the lookup should get updated before the recursive call
 
-                    for (auto l : items[handle[ind + 2]][lookup])
+                    string new_lookup = "";
+                    string new_str = "";
+                    if ((ind + 3) < handle.size())
+                        new_str = handle.substr(ind + 3, handle.size());
+
+                    for (int i : lookup)
+                    {
+                        string temp = new_str;
+                        temp.push_back(i);
+                        new_lookup += firstForString(temp, epsilon, first);
+                    }
+                    // cout << "New str: " << new_str << endl;
+                    // cout << "New lookup: " << new_lookup << endl;
+                    if (isComputed[handle[i + 2]][new_lookup] == false)
+                        compute_closer(handle[ind + 2], new_lookup, m, nter, items, isComputed, epsilon, first);
+
+                    for (auto l : items[handle[ind + 2]][new_lookup])
                     {
 
                         for (auto loop : l.second)
