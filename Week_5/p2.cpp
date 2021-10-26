@@ -1,24 +1,3 @@
-/*
-    Forming a parsing table for LALR grammar
-    1)Build the CLR(1) states 
-    2)Merge the states to form LALR(1)
-
-
-    changing the data structure to store the states from
-
-    unordered_map<char, set<string>>> &st 
-    to
-    unordered_map<char, set<pair<string,string>>>> &st
-    --> the second element in the pair corresponds to the lookaheads
-    again we would pass the given state and all other states to the compute_states() function
-
-    the change that would make a difference should be in the compute_closure part
-
-    now instead of precomputing items what can be done is, we need to send request each time
-
-
-*/
-
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -183,8 +162,7 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
                         temp.push_back(i);
                         new_lookup += firstForString(temp, epsilon, first);
                     }
-                    // cout << "New str: " << new_str << endl;
-                    // cout << "New lookup: " << new_lookup << endl;
+                    
                     if (isComputed[handle[i + 2]][new_lookup] == false)
                         compute_closer(handle[ind + 2], new_lookup, m, nter, items, isComputed, epsilon, first);
 
