@@ -254,6 +254,32 @@ bool check_reduce(string str)
     return false;
 }
 
+bool same_state(unordered_map<char, set<pair<string, string>>> &s1, unordered_map<char, set<pair<string, string>>> &s2)
+{
+    unordered_map<char, set<string>> temp1;
+    unordered_map<char, set<string>> temp2;
+
+    for (auto i : s1)
+    {
+        set<string> stored_states;
+        for (auto j : i.second)
+            stored_states.insert(j.first);
+        temp1[i.first] = stored_states;
+    }
+
+    for (auto i : s2)
+    {
+        set<string> stored_states;
+        for (auto j : i.second)
+            stored_states.insert(j.first);
+        temp2[i.first] = stored_states;
+    }
+
+    if (temp1 == temp2)
+        return true;
+    return false;
+}
+
 int main()
 {
 
@@ -307,7 +333,6 @@ int main()
 
     cout << endl
          << endl;
-  
 
     unordered_map<char, set<string>> m;
     unordered_map<int, pair<char, string>> ordered_grammar;
@@ -423,8 +448,54 @@ int main()
     }
 
     cout << endl
+         << endl
+         << "Parsing table for CLR" << endl
          << endl;
-    cout << "The parsing table is obtained as follows: " << endl
+
+    for (int i = 0; i <= states; i++)
+    {
+        cout << i << '\t';
+        for (auto j : ter)
+            cout << PT[i][j] << '\t';
+        if (PT[i]['$'] == "")
+            PT[i]['$'] = "^";
+        cout << PT[i]['$'] << '\t';
+        for (auto j : nter)
+            cout << PT[i][j] << '\t';
+        cout << endl;
+    }
+    cout << endl
+         << endl;
+
+    //combining the parsing table to form LALR
+
+    vector<bool> is_duplicate(states + 1, false);
+
+    for (int i = 0; i <= states; i++)
+    {
+        for (int j = 0; j <= states; j++)
+        {
+            if (i == j || is_duplicate[j] == true)
+                continue;
+            if (same_state(st[i], st[j]))
+            {
+                is_duplicate[j] = true;
+                for (auto x : ter)
+                {
+                    PT[i][x] = PT[j][x];
+                }
+                PT[i]['$'] = PT[j]['$'];
+                for (auto x : nter)
+                {
+                    PT[i][x] = PT[j][x];
+                }
+            }
+        }
+    }
+
+    cout << endl
+         << endl;
+    cout << "The parsing table for LALR is obtained as follows: " << endl
          << endl;
     cout << '\t';
 
@@ -437,6 +508,8 @@ int main()
 
     for (int i = 0; i <= states; i++)
     {
+        if (is_duplicate[i] == true)
+            continue;
         cout << i << '\t';
         for (auto j : ter)
             cout << PT[i][j] << '\t';
