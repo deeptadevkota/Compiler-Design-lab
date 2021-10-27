@@ -451,10 +451,19 @@ int main()
          << endl
          << "Parsing table for CLR" << endl
          << endl;
+    for (auto i : ter)
+        cout << i << '\t';
+    cout << '$' << '\t';
+    for (auto i : nter)
+        cout << i << '\t';
+    cout << endl;
+
+    cout << "_____________________________________________________" << endl
+         << endl;
 
     for (int i = 0; i <= states; i++)
     {
-        cout << i << '\t';
+        cout << i << " |\t";
         for (auto j : ter)
             cout << PT[i][j] << '\t';
         if (PT[i]['$'] == "")
@@ -506,11 +515,16 @@ int main()
         cout << i << '\t';
     cout << endl;
 
+    cout << "_____________________________________________________" << endl
+         << endl;
+    ;
     for (int i = 0; i <= states; i++)
     {
         if (is_duplicate[i] == true)
             continue;
-        cout << i << '\t';
+
+        cout << i << " |\t";
+
         for (auto j : ter)
             cout << PT[i][j] << '\t';
         if (PT[i]['$'] == "")
