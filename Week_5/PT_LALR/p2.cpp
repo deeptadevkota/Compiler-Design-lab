@@ -247,7 +247,6 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
 
 bool check_reduce(string str)
 {
-    cout << "checkreduce: " << str << endl;
     if (str[str.size() - 1] == '.')
         return true;
 
@@ -417,7 +416,7 @@ int main()
             {
                 if (check_reduce(j.first))
                 {
-                    cout << "HERE" << endl;
+                    
                     if (i.first == 'Z')
                     {
                         PT[ptr]['$'] = "accept";
@@ -544,6 +543,7 @@ int main()
 /*
 
 
+SAMPLE INPUT: 
 
 3
 a
