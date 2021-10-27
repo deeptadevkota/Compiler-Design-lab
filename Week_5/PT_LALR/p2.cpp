@@ -4,15 +4,18 @@ using namespace std;
 
 void calculateFirst(char c, unordered_map<char, set<string>> &m, vector<string> &first, vector<bool> &vis, vector<bool> &epsilon)
 {
+
+    cout << 1 << endl;
     string first_c = "";
     for (string i : m[c])
     {
+        i = i.substr(1, i.size() - 1);
         if (i == "#")
         {
             epsilon[c] = true;
             continue;
         }
-        if (vis[i[0]] == 0 && c != i[0])
+        if (vis[i[0]] == 0 && i[0] != c)
             calculateFirst(i[0], m, first, vis, epsilon);
 
         bool is_epsilon = epsilon[i[0]];
@@ -33,11 +36,11 @@ void calculateFirst(char c, unordered_map<char, set<string>> &m, vector<string> 
             if (is_epsilon && ptr == i.size())
                 epsilon[c] = true;
         }
-        if (first_c == "")
-            epsilon[c] = true;
+        // if (first_c == "")
+        //     epsilon[c] = true;
     }
-    if (first_c == "")
-        epsilon[c] = true;
+    // if (first_c == "")
+    //     epsilon[c] = true;
     vis[c] = 1;
     first[c] = first_c;
 
@@ -583,6 +586,18 @@ E=E+T|T
 T=T*F|F
 F=(E)|i
 E
+
+SAMPLE INPUT 3:
+2
+a
+b
+2
+S
+A
+2
+S=AA
+A=aA|b
+S
 
 
 
