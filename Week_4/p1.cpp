@@ -225,6 +225,7 @@ void compute_states(int &ptr, int &states, char i, unordered_map<int, unordered_
 int main()
 {
     int n_ter, n_nter;
+    cout << "Enter the number of terminals" << endl;
     cin >> n_ter;
 
     unordered_set<char> ter, nter;
@@ -236,6 +237,7 @@ int main()
     vector<bool> epsilon(256, false);
     char c;
 
+    cout << "Enter the terminals" << endl;
     for (int i = 0; i < n_ter; i++)
     {
         cin >> c;
@@ -245,25 +247,27 @@ int main()
         follow[c] = c;
         vis[c] = c;
     }
-
+    cout << "Enter the number of non-terminals" << endl;
     cin >> n_nter;
 
+    cout << "Enter the non -terminals" << endl;
     for (int i = 0; i < n_nter; i++)
     {
         cin >> c;
         nter.insert(c);
     }
-
+    cout << "Enter the number of productions" << endl;
     int n_pro;
     cin >> n_pro;
 
+    cout << "Enter the productions" << endl;
     vector<string> grammar(n_pro + 1);
 
     for (int i = 1; i <= n_pro; i++)
     {
         cin >> grammar[i];
     }
-
+    cout << "Enter the start symbol" << endl;
     char start_symbol;
     cin >> start_symbol;
 
@@ -448,15 +452,21 @@ int main()
 
     for (auto i : ter)
         cout << i << '\t';
+    cout << '$' << '\t';
     for (auto i : nter)
         cout << i << '\t';
     cout << endl;
+    cout << "_____________________________________________________________________________" << endl
+         << endl;
 
     for (int i = 0; i <= states; i++)
     {
-        cout << i << '\t';
+        cout << i << " |\t";
         for (auto j : ter)
             cout << PT[i][j] << '\t';
+        if (PT[i]['$'] == "")
+            PT[i]['$'] = "^";
+        cout << PT[i]['$'] << '\t';
         for (auto j : nter)
             cout << PT[i][j] << '\t';
         cout << endl;
@@ -470,13 +480,13 @@ int main()
 
 /*
 
-6
+SAMPLE INPUT 1
+5
 +
 *
 (
 )
 i
-$
 3
 E
 T
@@ -486,5 +496,19 @@ E=E+T|T
 T=T*F|F
 F=(E)|i
 E
+
+
+SAMPLE INPUT 2
+2
+a
+b
+2
+A
+S
+2
+S=AA
+A=aA|b
+S
+
 
 */
