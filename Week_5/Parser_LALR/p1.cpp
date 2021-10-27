@@ -549,6 +549,92 @@ int main()
     cout << endl
          << endl;
 
+    cout << "Enter the string for testing" << endl;
+    string test_str;
+    cin >> test_str;
+    test_str.push_back('$');
+
+    stack<char> st_data;
+    st_data.push('0');
+    ptr = 0;
+    bool found = false;
+    int n_states = states;
+
+    cout << "The shift and reduce operations used are: " << endl
+         << endl;
+
+    while (!st_data.empty() && ptr < test_str.size())
+    {
+        if (st_data.top() < '0' || st_data.top() > (n_states + '0'))
+        {
+            char top2 = st_data.top();
+            st_data.pop();
+            int m_int = st_data.top() - '0';
+            string res = PT[m_int][top2];
+            cout << st_data.top() << " " << top2 << " --> " << res << endl;
+
+            if (res == "accept")
+            {
+                found = true;
+                break;
+            }
+            else if (res == "^" || res == "")
+            {
+                found = false;
+                break;
+            }
+            st_data.push(top2);
+            st_data.push(res[0]);
+        }
+        int m_int = st_data.top() - '0';
+        string res = PT[m_int][test_str[ptr]];
+        cout << st_data.top() << " " << test_str[ptr] << " --> " << res << endl;
+        if (res == "accept")
+        {
+            found = true;
+            break;
+        }
+        else if (res == "^" || res == "")
+        {
+            found = false;
+            break;
+        }
+
+        if (res[0] == 'r')
+        {
+            int nth_g = res[1] - 48;
+            int len = ordered_grammar[nth_g].second.size();
+            len--;
+            len *= 2;
+            while (len--)
+            {
+                if (st_data.empty())
+                {
+                    found = false;
+                    break;
+                }
+                st_data.pop();
+            }
+
+            st_data.push(ordered_grammar[nth_g].first);
+        }
+        else
+        {
+            st_data.push(test_str[ptr]);
+            char to_state = res[1];
+            st_data.push(to_state);
+            ptr++;
+        }
+    }
+    if (found == true)
+    {
+        cout << "Given string is accepted" << endl;
+    }
+    else
+    {
+        cout << "Given string is not accepted" << endl;
+    }
+
     return 0;
 }
 
