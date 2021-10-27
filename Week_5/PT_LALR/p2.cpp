@@ -370,6 +370,8 @@ int main()
             calculateFirst(grammar[i][0], m, first, vis, epsilon);
         }
     }
+
+    cout << "COMPUTED THE FIRST" << endl;
     unordered_map<char, unordered_map<string, unordered_map<char, set<pair<string, string>>>>> items;
     unordered_map<int, unordered_map<char, set<pair<string, string>>>> st;
     unordered_map<char, unordered_map<string, bool>> isComputed;
@@ -416,7 +418,7 @@ int main()
             {
                 if (check_reduce(j.first))
                 {
-                    
+
                     if (i.first == 'Z')
                     {
                         PT[ptr]['$'] = "accept";
@@ -450,6 +452,7 @@ int main()
          << endl
          << "Parsing table for CLR" << endl
          << endl;
+    cout << '\t';
     for (auto i : ter)
         cout << i << '\t';
     cout << '$' << '\t';
@@ -481,6 +484,8 @@ int main()
 
     for (int i = 0; i <= states; i++)
     {
+        if (is_duplicate[i] == true)
+            continue;
         for (int j = 0; j <= states; j++)
         {
             if (i == j || is_duplicate[j] == true)
@@ -490,11 +495,16 @@ int main()
                 is_duplicate[j] = true;
                 for (auto x : ter)
                 {
+                    if (PT[j][x] == "^")
+                        continue;
                     PT[i][x] = PT[j][x];
                 }
-                PT[i]['$'] = PT[j]['$'];
+                if (PT[j]['$'] != "^")
+                    PT[i]['$'] = PT[j]['$'];
                 for (auto x : nter)
                 {
+                    if (PT[j][x] == "^")
+                        continue;
                     PT[i][x] = PT[j][x];
                 }
             }
@@ -526,8 +536,7 @@ int main()
 
         for (auto j : ter)
             cout << PT[i][j] << '\t';
-        if (PT[i]['$'] == "")
-            PT[i]['$'] = "^";
+
         cout << PT[i]['$'] << '\t';
         for (auto j : nter)
             cout << PT[i][j] << '\t';
@@ -543,7 +552,7 @@ int main()
 /*
 
 
-SAMPLE INPUT: 
+SAMPLE INPUT 1: 
 
 3
 a
@@ -556,6 +565,24 @@ A
 S=A
 A=aAb|c
 S
+
+
+SAMPLE INPUT 2: 
+5
++
+*
+(
+)
+i
+3
+E
+T
+F
+3
+E=E+T|T
+T=T*F|F
+F=(E)|i
+E
 
 
 
