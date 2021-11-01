@@ -295,7 +295,7 @@ int main()
     vector<bool> epsilon(256, false);
 
     char c;
-    cout << "Enter number the terminals" << endl;
+    cout << "Enter the terminals" << endl;
     for (int i = 0; i < n_ter; i++)
     {
         cin >> c;
