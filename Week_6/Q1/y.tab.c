@@ -66,10 +66,10 @@
 
 
 /* First part of user prologue.  */
-#line 1 "ip.y"
+#line 1 "yc.y"
 
-#include <stdio.h>
-#include <stdlib.h>
+   #include <stdio.h>
+   #include <stdlib.h>
 
 #line 75 "y.tab.c"
 
@@ -498,8 +498,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    12,    12,    13,    13,    14,    14,    15,    17,    17,
-      18,    18,    19,    21,    21,    22,    22,    23
+       0,    14,    14,    15,    15,    16,    16,    17,    19,    19,
+      20,    20,    21,    23,    23,    24,    24,    25
 };
 #endif
 
@@ -1298,74 +1298,74 @@ yyreduce:
   switch (yyn)
     {
   case 3:
-#line 13 "ip.y"
-              {A1();}
+#line 15 "yc.y"
+          {A1();}
 #line 1304 "y.tab.c"
     break;
 
   case 4:
-#line 13 "ip.y"
-                      {A2();}
+#line 15 "yc.y"
+                  {A2();}
 #line 1310 "y.tab.c"
     break;
 
   case 5:
-#line 14 "ip.y"
-               {A1();}
+#line 16 "yc.y"
+          {A1();}
 #line 1316 "y.tab.c"
     break;
 
   case 6:
-#line 14 "ip.y"
-                       {A2();}
+#line 16 "yc.y"
+                  {A2();}
 #line 1322 "y.tab.c"
     break;
 
   case 8:
-#line 17 "ip.y"
-              {A1();}
+#line 19 "yc.y"
+          {A1();}
 #line 1328 "y.tab.c"
     break;
 
   case 9:
-#line 17 "ip.y"
-                      {A2();}
+#line 19 "yc.y"
+                  {A2();}
 #line 1334 "y.tab.c"
     break;
 
   case 10:
-#line 18 "ip.y"
-               {A1();}
+#line 20 "yc.y"
+          {A1();}
 #line 1340 "y.tab.c"
     break;
 
   case 11:
-#line 18 "ip.y"
-                       {A2();}
+#line 20 "yc.y"
+                  {A2();}
 #line 1346 "y.tab.c"
     break;
 
   case 13:
-#line 21 "ip.y"
-              {A2();}
+#line 23 "yc.y"
+          {A2();}
 #line 1352 "y.tab.c"
     break;
 
   case 15:
-#line 22 "ip.y"
-              {A1();}
+#line 24 "yc.y"
+         {A1();}
 #line 1358 "y.tab.c"
     break;
 
   case 16:
-#line 22 "ip.y"
-                      {A2();}
+#line 24 "yc.y"
+                 {A2();}
 #line 1364 "y.tab.c"
     break;
 
   case 17:
-#line 23 "ip.y"
-             {A3();}
+#line 25 "yc.y"
+        {A3();}
 #line 1370 "y.tab.c"
     break;
 
@@ -1602,31 +1602,37 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 26 "ip.y"
+#line 28 "yc.y"
 
-
-#include "lex.yy.c"
+  
+#include"lex.yy.c"
 char st[100];
 int top=0;
-
-main()
-{
-    printf("Enter infix expression:  ");
-    yyparse();
-    printf("\n");
+  
+void yyerror(char * s)
+/* yacc error handler */
+{  
+ fprintf (stderr, "%s\n", s);
 }
 
+int main()
+{
+    printf("Enter infix expression:  "); 
+    yyparse();
+    printf("\n");
+    return 0;
+}
 A1()
 {
     st[top++]=yytext[0];
 }
-
+  
 A2()
 {
-    printf("%c",st[--top]);
+    printf("%c", st[--top]);
 }
-
+  
 A3()
 {
-    printf("%c",yytext[0]);
+    printf("%c", yytext[0]);
 }
