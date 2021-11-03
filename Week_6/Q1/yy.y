@@ -27,11 +27,11 @@ F  :  '('E{func2();}')'
 %%
   
 #include"lex.yy.c"
-char stack[100];
+char stack[10000];
 int top=0;
   
+/* yacc error handler */  
 void yyerror(char * s)
-/* yacc error handler */
 {  
  fprintf (stderr, "%s\n", s);
 }
