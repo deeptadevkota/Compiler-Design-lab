@@ -1,6 +1,5 @@
 %{
    #include <stdio.h>
-   #include <stdlib.h>
 %}
   
 %token    ID
@@ -12,17 +11,17 @@
 %%
   
 S  :  E
-E  :  E'+'{A1();}T{A2();}
-   |  E'-'{A1();}T{A2();}
+E  :  E'+'{func1();}T{func2();}
+   |  E'-'{func1();}T{func2();}
    |  T
    ;
-T  :  T'*'{A1();}F{A2();}
-   |  T'/'{A1();}F{A2();}
+T  :  T'*'{func1();}F{func2();}
+   |  T'/'{func1();}F{func2();}
    |  F
    ;
-F  :  '('E{A2();}')'
-   |  '-'{A1();}F{A2();}
-   |  ID{A3();}
+F  :  '('E{func2();}')'
+   |  '-'{func1();}F{func2();}
+   |  ID{func3();}
    ;
   
 %%
@@ -44,17 +43,17 @@ int main()
     printf("\n");
     return 0;
 }
-A1()
+func1()
 {
     stack[top++]=yytext[0];
 }
   
-A2()
+func2()
 {
     printf("%c",  stack[--top]);
 }
   
-A3()
+func3()
 {
     printf("%c", yytext[0]);
 }

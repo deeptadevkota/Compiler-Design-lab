@@ -69,9 +69,8 @@
 #line 1 "yy.y"
 
    #include <stdio.h>
-   #include <stdlib.h>
 
-#line 75 "y.tab.c"
+#line 74 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -498,8 +497,8 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    14,    14,    15,    15,    16,    16,    17,    19,    19,
-      20,    20,    21,    23,    23,    24,    24,    25
+       0,    13,    13,    14,    14,    15,    15,    16,    18,    18,
+      19,    19,    20,    22,    22,    23,    23,    24
 };
 #endif
 
@@ -1298,79 +1297,79 @@ yyreduce:
   switch (yyn)
     {
   case 3:
-#line 15 "yy.y"
-          {A1();}
-#line 1304 "y.tab.c"
+#line 14 "yy.y"
+          {func1();}
+#line 1303 "y.tab.c"
     break;
 
   case 4:
-#line 15 "yy.y"
-                  {A2();}
-#line 1310 "y.tab.c"
+#line 14 "yy.y"
+                     {func2();}
+#line 1309 "y.tab.c"
     break;
 
   case 5:
-#line 16 "yy.y"
-          {A1();}
-#line 1316 "y.tab.c"
+#line 15 "yy.y"
+          {func1();}
+#line 1315 "y.tab.c"
     break;
 
   case 6:
-#line 16 "yy.y"
-                  {A2();}
-#line 1322 "y.tab.c"
+#line 15 "yy.y"
+                     {func2();}
+#line 1321 "y.tab.c"
     break;
 
   case 8:
-#line 19 "yy.y"
-          {A1();}
-#line 1328 "y.tab.c"
+#line 18 "yy.y"
+          {func1();}
+#line 1327 "y.tab.c"
     break;
 
   case 9:
-#line 19 "yy.y"
-                  {A2();}
-#line 1334 "y.tab.c"
+#line 18 "yy.y"
+                     {func2();}
+#line 1333 "y.tab.c"
     break;
 
   case 10:
-#line 20 "yy.y"
-          {A1();}
-#line 1340 "y.tab.c"
+#line 19 "yy.y"
+          {func1();}
+#line 1339 "y.tab.c"
     break;
 
   case 11:
-#line 20 "yy.y"
-                  {A2();}
-#line 1346 "y.tab.c"
+#line 19 "yy.y"
+                     {func2();}
+#line 1345 "y.tab.c"
     break;
 
   case 13:
-#line 23 "yy.y"
-          {A2();}
-#line 1352 "y.tab.c"
+#line 22 "yy.y"
+          {func2();}
+#line 1351 "y.tab.c"
     break;
 
   case 15:
-#line 24 "yy.y"
-         {A1();}
-#line 1358 "y.tab.c"
+#line 23 "yy.y"
+         {func1();}
+#line 1357 "y.tab.c"
     break;
 
   case 16:
-#line 24 "yy.y"
-                 {A2();}
-#line 1364 "y.tab.c"
+#line 23 "yy.y"
+                    {func2();}
+#line 1363 "y.tab.c"
     break;
 
   case 17:
-#line 25 "yy.y"
-        {A3();}
-#line 1370 "y.tab.c"
+#line 24 "yy.y"
+        {func3();}
+#line 1369 "y.tab.c"
     break;
 
 
-#line 1374 "y.tab.c"
+#line 1373 "y.tab.c"
 
       default: break;
     }
@@ -1602,7 +1601,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 28 "yy.y"
+#line 27 "yy.y"
 
   
 #include"lex.yy.c"
@@ -1622,17 +1621,17 @@ int main()
     printf("\n");
     return 0;
 }
-A1()
+func1()
 {
     stack[top++]=yytext[0];
 }
   
-A2()
+func2()
 {
     printf("%c",  stack[--top]);
 }
   
-A3()
+func3()
 {
     printf("%c", yytext[0]);
 }
