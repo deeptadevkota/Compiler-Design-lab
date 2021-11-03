@@ -110,6 +110,9 @@ void generateStates(char start_symbol, vector<char> terminals, vector<char> nonT
             string prod = itr.second;
             char nt = itr.first;
 
+            if(prod == ".^")    //epsilon production
+                continue;
+
             posi = getPositionOfScannedProd(prod);   //get the position until which string is scanned
 
             if(posi == prod.length()-1)   //string is completely scanned hence the state consists of reduced item
