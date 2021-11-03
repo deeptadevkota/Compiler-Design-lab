@@ -66,7 +66,7 @@
 
 
 /* First part of user prologue.  */
-#line 1 "yc.y"
+#line 1 "yy.y"
 
    #include <stdio.h>
    #include <stdlib.h>
@@ -1298,73 +1298,73 @@ yyreduce:
   switch (yyn)
     {
   case 3:
-#line 15 "yc.y"
+#line 15 "yy.y"
           {A1();}
 #line 1304 "y.tab.c"
     break;
 
   case 4:
-#line 15 "yc.y"
+#line 15 "yy.y"
                   {A2();}
 #line 1310 "y.tab.c"
     break;
 
   case 5:
-#line 16 "yc.y"
+#line 16 "yy.y"
           {A1();}
 #line 1316 "y.tab.c"
     break;
 
   case 6:
-#line 16 "yc.y"
+#line 16 "yy.y"
                   {A2();}
 #line 1322 "y.tab.c"
     break;
 
   case 8:
-#line 19 "yc.y"
+#line 19 "yy.y"
           {A1();}
 #line 1328 "y.tab.c"
     break;
 
   case 9:
-#line 19 "yc.y"
+#line 19 "yy.y"
                   {A2();}
 #line 1334 "y.tab.c"
     break;
 
   case 10:
-#line 20 "yc.y"
+#line 20 "yy.y"
           {A1();}
 #line 1340 "y.tab.c"
     break;
 
   case 11:
-#line 20 "yc.y"
+#line 20 "yy.y"
                   {A2();}
 #line 1346 "y.tab.c"
     break;
 
   case 13:
-#line 23 "yc.y"
+#line 23 "yy.y"
           {A2();}
 #line 1352 "y.tab.c"
     break;
 
   case 15:
-#line 24 "yc.y"
+#line 24 "yy.y"
          {A1();}
 #line 1358 "y.tab.c"
     break;
 
   case 16:
-#line 24 "yc.y"
+#line 24 "yy.y"
                  {A2();}
 #line 1364 "y.tab.c"
     break;
 
   case 17:
-#line 25 "yc.y"
+#line 25 "yy.y"
         {A3();}
 #line 1370 "y.tab.c"
     break;
@@ -1602,7 +1602,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 28 "yc.y"
+#line 28 "yy.y"
 
   
 #include"lex.yy.c"
