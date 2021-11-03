@@ -154,7 +154,7 @@ void generateStates(char start_symbol, vector<char> terminals, vector<char> nonT
         //assign flag and production number in reduced_state vector
         reduced_states[i].first = reduced_flag;
         reduced_states[i].second = pair_reduced;
-
+        
         //check if transition sets are already present in states or needs to be added
         for(auto itr:goto_map)
         {

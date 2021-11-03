@@ -86,7 +86,7 @@ void computeClosureForStates(string prod, vector<char> look_aheads, set<pair<cha
     posi = getPositionOfScannedProd(prod);
 
     // cout << "computing states function" << endl;
-    cout << prod << " " << posi <<endl;
+    //cout << prod << " " << posi <<endl;
 
     if(posi==prod.length()-1)
         return;
@@ -289,6 +289,7 @@ void generateStates(char start_symbol, vector<char> terminals, vector<char> nonT
     }
 
 }
+
 
 //function to calculate first
 void calculateFirst(char nonTerminal)
@@ -507,6 +508,9 @@ string getStringFromNum(int n)
     string num;
     char digit;
 
+    if(n==0)
+        return "0";
+
     while(n>0)
     {
         digit = 48 + (n%10);
@@ -528,7 +532,7 @@ string getStringFromNum(int n)
 }
 
 //function to print parsing table
-void printParsingTable(int n_terminals, int n_nonTerminals,vector<char> terminals, vector<char> nonTerminals, vector<vector<pair<int,vector<int>>>> parsing_table)
+void printParsingTable(int n_terminals, int n_nonTerminals,vector<char> terminals, vector<char> nonTerminals, vector<vector<pair<int,vector<int>>>> parsing_table, vector<pair<int,vector<int>>> duplicate_pair)
 {
 
     int i, j;
@@ -560,10 +564,21 @@ void printParsingTable(int n_terminals, int n_nonTerminals,vector<char> terminal
 
     for(i=0;i<n_states;i++)
     {
-        cout << "| "<<left <<setw(12)  << i;
+        if(duplicate_pair[i].first == -1)
+            continue;
+        string state_no;
+        state_no = getStringFromNum(i);
+        if(duplicate_pair[i].first == 1)
+        {
+            for(j=0;j<duplicate_pair[i].second.size(); j++)
+            {
+                state_no += (","+getStringFromNum(duplicate_pair[i].second[j]));
+            }
+        }
+        cout << "| "<< left <<setw(12)  << state_no;
+
         for(j=0;j<=n_terminals;j++)
         {
-
             if(parsing_table[i][j].first == 0)
             {
                 value = "I";
@@ -594,7 +609,11 @@ void printParsingTable(int n_terminals, int n_nonTerminals,vector<char> terminal
             }
             else
             {
-                value = getStringFromNum(parsing_table[i][j].second[0]);
+                value = "";
+                for(int m=0;m<parsing_table[i][j].second.size();m++)
+                {
+                    value += (getStringFromNum(parsing_table[i][j].second[m])+",");
+                }
                 cout << "| " << left <<setw(10) << value;
             }
         }
@@ -687,6 +706,55 @@ int checkInput(string input, vector<vector<pair<int,int>>> parsing_table, vector
     return 0;
 }
 
+
+
+int mergeParsingTable(vector<vector<pair<int,vector<int>>>> &parsing_table, int total,vector<pair<int,vector<int>>> &duplicate_pair)
+{
+    int i,j,n_states,k;
+    n_states = states.size();
+    int is_LALR=1;
+    
+    for(i=1;i<n_states;i++)
+    {
+        if(mergeStates[i].size()==0)
+        {    
+            continue;
+        }
+        for(j=0;j<mergeStates[i].size();j++)
+        {
+            if(mergeStates[i][j] > i)
+                continue;
+            int l = mergeStates[i][j];
+            for(k=0;k<total;k++)
+            {
+                if(parsing_table[i][k].first == -1 && parsing_table[l][k].first == -1)
+                    continue;
+                else if(parsing_table[i][k].first == 1 && parsing_table[l][k].first == 0){
+                    is_LALR=0;
+                    break;
+                }else if(parsing_table[i][k].first == 1 && parsing_table[l][k].first == 1){
+                    if(parsing_table[i][k].second[0] != parsing_table[i][k].second[0])
+                    {
+                        is_LALR=0;
+                        break;
+                    }
+                }else if(parsing_table[i][k].first == -1 && parsing_table[l][k].first == 1){
+                    duplicate_pair[i].first = 1;
+                    duplicate_pair[l].first = -1;
+                    duplicate_pair[i].second.push_back(parsing_table[l][k].second[0]);
+                }else if(parsing_table[i][k].first == 1 && parsing_table[l][k].first == -1){
+                    duplicate_pair[i].first = 1;
+                    duplicate_pair[l].first = -1;
+                }
+            }
+            if(is_LALR==0)
+                break;
+        }
+        if(is_LALR==0)
+                break;
+    }
+    return is_LALR;
+}
 
 int main(void)
 {
@@ -786,7 +854,7 @@ int main(void)
     printStates(start_symbol);
 
     
-    // printMergeStates();
+    printMergeStates();
 
     // cout << "states generated" << endl;
 
@@ -799,11 +867,13 @@ int main(void)
     terminals.push_back('$');
 
     vector<vector<pair<int,vector<int>>>> parsing_table(n_states,vector<pair<int,vector<int>>>(n_terminals + n_nonTerminals+1,pair<int,vector<int>>(-1,vector<int>())));
+    vector<pair<int,vector<int>>> duplicate_pair(n_states,pair<int,vector<int>>(0,vector<int>()));
+    vector<int> is_merged(n_states);
     
     for(i=0;i<n_states;i++)
     {
+        
         // cout << "\nState: " << i << endl;
-
 
         /*----Check if current state corresponding to LR(1) item generated from augmented production--------------*/
         string temp;
@@ -878,6 +948,7 @@ int main(void)
                 {
                     parsing_table[i][j].second.push_back(mergeStates[itr->second][m]);
                 }
+                sort(parsing_table[i][j].second.begin(),parsing_table[i][j].second.end());
             }
         }
 
@@ -895,6 +966,11 @@ int main(void)
             {
                 parsing_table[i][k].first = 0;
                 parsing_table[i][k].second.push_back(itr->second);
+                for(int m=0;m<mergeStates[itr->second].size();m++)
+                {
+                    parsing_table[i][k].second.push_back(mergeStates[itr->second][m]);
+                }
+                sort(parsing_table[i][k].second.begin(),parsing_table[i][k].second.end());
             }
         }
         /*----------------------------------------------*/
@@ -902,39 +978,36 @@ int main(void)
         if(is_LALR==0)
             break;
         // cout << "Non-Terminals checked" << endl;
+
+        vector<pair<int,vector<int>>> duplicateCheck = parsing_table[i];
+        for(j=0;j<i;j++)
+        {
+            if(parsing_table[j] == duplicateCheck)
+            {
+                duplicate_pair[j].first = 1;
+                duplicate_pair[j].second.push_back(i);
+                duplicate_pair[i].first = -1;
+                break;
+            }
+        }
+
+        
+        if(is_LALR==0)
+            break;
+
     }
 
     /*----------------------------------------------------------*/
 
     if(is_LALR==1)
     {    
-        printParsingTable(n_terminals, n_nonTerminals, terminals, nonTerminals, parsing_table);
+        printParsingTable(n_terminals, n_nonTerminals, terminals, nonTerminals, parsing_table,duplicate_pair);
         string input;
         int x=1;
-
-        // while(x)
-        // {
-        //     cout << "\nEnter input string: ";
-        //     cin >> input;
-        //     if(checkInput(input,parsing_table,terminals,nonTerminals))
-        //     {
-        //         cout << "Above string is ACCEPTED by the given grammar" << endl;
-        //     }
-        //     else{
-        //         cout << "Above string is NOT ACCEPTED by the given grammar" << endl;
-        //     }
-
-        //     cout << "\nTo check more strings enter 1 else 0: " ;
-        //     cin >> x;
-        // }
-
-        // cout << endl;
 
     }
     else
         cout << "\nGiven grammar is not LALR(1) grammar" << endl;
-
-    
     
     return 0;
 }
