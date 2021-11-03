@@ -1,13 +1,10 @@
-%{
-  /* Definition section */
-%}
-ALPHA [A-Z a-z]
-DIGIT [0-9]
+letter [A-Za-z]
+digit [0-9]
   
 /* Rule Section */
 %%
-{ALPHA}({ALPHA}|{DIGIT})*  return ID;
-{DIGIT}+                   {yylval=atoi(yytext); return ID;}
-[\n \t]                    yyterminate();
-.                          return yytext[0];
+{letter}({letter}|{letter})*  return ID;
+{digit}+                      {yylval=atoi(yytext); return ID;}
+[\n\t]                        yyterminate();
+.                             return yytext[0];
 %%

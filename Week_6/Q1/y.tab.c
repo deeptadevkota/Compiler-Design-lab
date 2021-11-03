@@ -1606,7 +1606,7 @@ yyreturn:
 
   
 #include"lex.yy.c"
-char st[100];
+char stack[100];
 int top=0;
   
 void yyerror(char * s)
@@ -1624,12 +1624,12 @@ int main()
 }
 A1()
 {
-    st[top++]=yytext[0];
+    stack[top++]=yytext[0];
 }
   
 A2()
 {
-    printf("%c", st[--top]);
+    printf("%c",  stack[--top]);
 }
   
 A3()
