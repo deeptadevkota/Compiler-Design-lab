@@ -18,20 +18,20 @@ prog: |prog expr '\n';
 
 expr: | additiveExpr {printf("Value is: %d\n\n", $1)};
 
-additiveExpr: additiveExpr '+' multiplicativeExpr {$$ = $1+$3}
-            | additiveExpr '-' multiplicativeExpr {$$ = $1-$3}
+additiveExpr: additiveExpr '+' multiplicativeExpr {$$ = $1+$3; printf("node: {op = +}\n");}
+            | additiveExpr '-' multiplicativeExpr {$$ = $1-$3; printf("node: {op = -}\n");}
             | multiplicativeExpr;
 
-multiplicativeExpr: multiplicativeExpr '*' primaryExpr {$$ = $1*$3}
-                  | multiplicativeExpr '/' primaryExpr {$$ = $1/$3}
+multiplicativeExpr: multiplicativeExpr '*' primaryExpr {$$ = $1*$3; printf("node: {op = *}\n");}
+                  | multiplicativeExpr '/' primaryExpr {$$ = $1/$3; printf("node: {op = /}\n");}
                   | primaryExpr;
 
 primaryExpr: parenthesis
            | primary;
 
-parenthesis: '(' additiveExpr ')' {$$ = $2};
+parenthesis: '(' additiveExpr ')' {$$ = $2; printf("leaf: {value = %d}\n",$2);};
 
-primary: INTEGER {$$ = $1};
+primary: INTEGER {$$ = $1; printf("leaf: {value = %d}\n",$1);};
 
 
 %%
