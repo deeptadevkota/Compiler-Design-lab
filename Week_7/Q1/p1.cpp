@@ -381,11 +381,7 @@ int main(void)
 
     expression.erase(0,1);
 
-    
-
     string postFix = infixToPostfix(expression);
-
-    
 
     threeAddressCode(postFix,lhs);
 
