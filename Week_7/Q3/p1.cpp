@@ -15,7 +15,12 @@ int main()
     equation inp[n];
     for (int i = 0; i < n; i++)
     {
-        cin >> inp[i].lf >> inp[i].rt;
+        cout << "\nEquation: " << i + 1 << endl
+             << endl;
+        cout << "LHS:";
+        cin >> inp[i].lf;
+        cout << "RHS:";
+        cin >> inp[i].rt;
     }
     cout << "The given segment of code is as follows:" << endl;
     for (int i = 0; i < n; i++)
