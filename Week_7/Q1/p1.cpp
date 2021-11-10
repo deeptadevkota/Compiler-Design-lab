@@ -9,6 +9,8 @@
 
 using namespace std;
 
+
+//fucntion check precedence of operator
 int precedence(char op)
 {
     switch(op)
@@ -22,49 +24,52 @@ int precedence(char op)
     return -1;
 }
 
+//fucntion to convert infix to postfix
 string infixToPostfix(string expression)
 {
     int i,l;
     stack<char> st;
     string postfixExp="", num;
 
-    l= expression.length();
+    l = expression.length();
 
     for(i=0;i<l;i++)
     {
-        if((expression[i]>=65 && expression[i]<=90) || (expression[i]>=97 && expression[i]<=122) || (expression[i]>=48 && expression[i]<=57))
+        if((expression[i]>=65 && expression[i]<=90) || (expression[i]>=97 && expression[i]<=122) || (expression[i]>=48 && expression[i]<=57)) 
         {
-            num.push_back(expression[i]);
+            num.push_back(expression[i]);          //current symbol is part of operand
         }
-        else
+        else                                       //current symbol is operator
         {
-            if(num.length()>0)
+            if(num.length()>0)                    //append the operand along with '_' as delimitor to postfix expression
             {
                 postfixExp+=(num+"_");
                 num = "";
-            }else{
-                num.push_back(expression[i]);
+            }
+            else                                  // current operator is unary opeartor
+            {
+                num.push_back(expression[i]);     // append the operator along with operand to postfix expression
                 continue;
             }
 
-            while(!st.empty() && precedence(st.top()) < precedence(expression[i]))
+            while(!st.empty() && precedence(st.top()) < precedence(expression[i]))  //pop the operators of higher preference than current operator from stack
             {
                 postfixExp.push_back(st.top());
-                postfixExp+="_";
+                postfixExp+="_";       //append the operator along with '_' as delimitor to postfix expression
                 st.pop();
             }
 
-            st.push(expression[i]);
+            st.push(expression[i]);    //push the current operator to stack
         }
     }
 
-    if(num.length()>0)
+    if(num.length()>0)        //push the last operand to postfix expression along with '_'
     {
         postfixExp+=(num+"_");
         num = "";
     }
 
-    while(!st.empty())
+    while(!st.empty())          //empty the stack by poping operators and appending to the postfix expression along with '_'
     {
         postfixExp.push_back(st.top());
         postfixExp+="_";
@@ -75,6 +80,8 @@ string infixToPostfix(string expression)
 
 }
 
+
+//fucntion to check if symbol/string is operator or operand
 int checkIfOperator(string op)
 {
     if(op=="+" || op=="-" || op=="*" || op=="/" || op=="^")
@@ -83,7 +90,7 @@ int checkIfOperator(string op)
 }
 
 
-
+//function to represent three address code in quadrapules
 void quadrapuleRepresentation(vector<pair<string,pair<string,string>>> tac, string lhs)
 {
 
@@ -98,14 +105,15 @@ void quadrapuleRepresentation(vector<pair<string,pair<string,string>>> tac, stri
     {
         arg1 = tac[i].second.first;
         arg2 = tac[i].second.second;
-
-        if(arg1[0] == '#')
+        
+    
+        if(arg1[0] == '#')  //arg1 is temporary variable
         {
             arg1.erase(0,1);
             arg1 = "t" + arg1;
         }
 
-        if(arg2[0] == '#')
+        if(arg2[0] == '#')  //arg2 is temporary variable
         {
             arg2.erase(0,1);
             arg2 = "t" + arg1;
@@ -114,7 +122,7 @@ void quadrapuleRepresentation(vector<pair<string,pair<string,string>>> tac, stri
     }
     arg1 = tac[i].second.first;
     arg2 = tac[i].second.second;
-    if(arg1[0] == '#')
+    if(arg1[0] == '#')    //arg1 is temporary variable
     {
         arg1.erase(0,1);
         arg1 = "t" + arg1;
@@ -124,6 +132,7 @@ void quadrapuleRepresentation(vector<pair<string,pair<string,string>>> tac, stri
 
 }
 
+//function to represent three address code in triples
 void triplesRepresentation(vector<pair<string,pair<string,string>>> tac, string lhs)
 {
     int i;
@@ -139,13 +148,13 @@ void triplesRepresentation(vector<pair<string,pair<string,string>>> tac, string 
         arg1 = tac[i].second.first;
         arg2 = tac[i].second.second;
 
-        if(arg1[0] == '#')
+        if(arg1[0] == '#')     //arg1 is temporary variable
         {
             arg1.erase(0,1);
             arg1 = "(" + arg1 + ")";
         }
 
-        if(arg2[0] == '#')
+        if(arg2[0] == '#')    //arg2 is temporary variable
         {
             arg2.erase(0,1);
             arg2 = "(" + arg2 + ")";
@@ -158,7 +167,7 @@ void triplesRepresentation(vector<pair<string,pair<string,string>>> tac, string 
     arg1 = tac[i].second.first;
     arg2 = tac[i].second.second;
 
-    if(arg1[0] == '#')
+    if(arg1[0] == '#')   //arg1 is temporary variable
     {
         arg1.erase(0,1);
         arg1 = "(" + arg1 + ")";
@@ -169,6 +178,7 @@ void triplesRepresentation(vector<pair<string,pair<string,string>>> tac, string 
 
 }
 
+//function to represent three address code in indirect triples
 void indirectTriplesRepresentation(vector<pair<string,pair<string,string>>> tac, string lhs)
 {
     int i;
@@ -190,14 +200,14 @@ void indirectTriplesRepresentation(vector<pair<string,pair<string,string>>> tac,
         
         arg1 = tac[i].second.first;
         arg2 = tac[i].second.second;
-
-        if(arg1[0] == '#')
+  
+        if(arg1[0] == '#')       //arg1 is temporary variable
         {
             arg1.erase(0,1);
             arg1 = "(" + arg1 + ")";
         }
 
-        if(arg2[0] == '#')
+        if(arg2[0] == '#')     //arg2 is temporary variable
         {
             arg2.erase(0,1);
             arg2 = "(" + arg2 + ")";
@@ -210,7 +220,7 @@ void indirectTriplesRepresentation(vector<pair<string,pair<string,string>>> tac,
     arg1 = tac[i].second.first;
     arg2 = tac[i].second.second;
 
-    if(arg1[0] == '#')
+    if(arg1[0] == '#')       //arg1 is temporary variable
     {
         arg1.erase(0,1);
         arg1 = "(" + arg1 + ")";
@@ -230,6 +240,7 @@ void indirectTriplesRepresentation(vector<pair<string,pair<string,string>>> tac,
 
 }
 
+//fucntion to convert integer to corresponding string
 string intToString(int num)
 {
     int i,l;
@@ -252,6 +263,7 @@ string intToString(int num)
     return s;
 }
 
+//fucntion to generate three address code for given expression
 void threeAddressCode(string expression, string lhs)
 {
     stack<string> st;
@@ -263,18 +275,20 @@ void threeAddressCode(string expression, string lhs)
 
     for(i=0;i<expression.length();i++)
     {
-        if(expression[i]=='_')
+        if(expression[i]=='_')       // current synbol is delimiter
         {
-            if(checkIfOperator(op))
+            if(checkIfOperator(op))     //check if current symbol is operand or operator
             {
-                string op1 = st.top();
+
+                //pop the top two operators from stack
+                string op1 = st.top();   
                 st.pop();
                 string op2 = st.top();
                 st.pop();
 
                 int expNo;
                 pair<string,pair<string,string>> exp = make_pair(op, make_pair(op2,op1));
-                if(find(eq.begin(),eq.end(),exp) == eq.end())
+                if(find(eq.begin(),eq.end(),exp) == eq.end())    //check if the expression is already present in the three address code
                 {
                     eq.push_back(exp);
                     expNo = eq.size()-1;
@@ -283,19 +297,19 @@ void threeAddressCode(string expression, string lhs)
                     expNo = itr - eq.begin();
                 }
                 
-                string eval = "#";
+                string eval = "#";      //to indicate that operator is temporary vaiable
                 eval += intToString(expNo);
                 
                 st.push(eval);
             }
-            else if(op[0]=='-' || op[0]=='+')
+            else if(op[0]=='-' || op[0]=='+')    //unary operator with operand
             {
                 string op1 = op;
                 op1.erase(0,1);
 
                 int expNo;
                 pair<string,pair<string,string>> exp = make_pair("uminus", make_pair(op1,""));
-                if(find(eq.begin(),eq.end(),exp) == eq.end())
+                if(find(eq.begin(),eq.end(),exp) == eq.end())   //check if already present in three address code
                 {
                     eq.push_back(exp);
                     expNo = eq.size()-1;
@@ -304,26 +318,30 @@ void threeAddressCode(string expression, string lhs)
                     expNo = itr - eq.begin();
                 }
                 
-                string eval = "#";
+                string eval = "#";      //to indicate that operator is temporary vaiable
                 eval += intToString(expNo);
                 st.push(eval);
 
             }
-            else
+            else        //in case of operator push to stack
             {
                 st.push(op);
             }
             op="";
-        }else{
+        }
+        else
+        {
             op.push_back(expression[i]);
         }
     }
+    
 
     eq.push_back(make_pair("",make_pair(st.top(),"")));
     st.pop();
 
     cout << endl;
 
+    //printing the three address code
     cout << "Three Address Code : " << endl;
     string arg1, arg2;
     for(i=0;i<eq.size()-1;i++)
